@@ -1,0 +1,126 @@
+/* PULSE VPN — Design Tokens */
+
+:root {
+  
+  --c-primary:         #6366F1;
+  --c-primary-hover:   #7C7EF5;
+  --c-primary-active:  #4F52D9;
+  --c-primary-soft:    rgba(99, 102, 241, 0.12);
+  --c-primary-glow:    rgba(99, 102, 241, 0.35);
+
+  --c-secondary:       #8B5CF6;
+  --c-secondary-hover: #A78BFA;
+  --c-secondary-soft:  rgba(139, 92, 246, 0.12);
+
+  --c-accent:          #22D3EE;
+  --c-accent-hover:    #67E8F9;
+  --c-accent-soft:     rgba(34, 211, 238, 0.12);
+
+  --c-success:      #10B981;
+  --c-success-soft: rgba(16, 185, 129, 0.14);
+  --c-warning:      #F59E0B;
+  --c-warning-soft: rgba(245, 158, 11, 0.14);
+  --c-error:        #EF4444;
+  --c-error-soft:   rgba(239, 68, 68, 0.14);
+  --c-info:         #22D3EE;
+  --c-info-soft:    rgba(34, 211, 238, 0.14);
+
+  --c-bg:             #081220;
+  --c-bg-elev:        #0C1929;
+  --c-surface:        #111827;
+  --c-surface-2:      #1A2332;
+  --c-surface-3:      #232E42;
+  --c-border:         rgba(148, 163, 184, 0.12);
+  --c-border-strong:  rgba(148, 163, 184, 0.22);
+  --c-overlay:        rgba(0, 0, 0, 0.55);
+
+  --c-text:           #F8FAFC;
+  --c-text-muted:     #94A3B8;
+  --c-text-dim:       #64748B;
+  --c-text-inverse:   #081220;
+  --c-text-on-primary: #FFFFFF;
+
+  --grad-brand:   linear-gradient(135deg, #22D3EE 0%, #6366F1 100%);
+  --grad-primary: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  --grad-accent:  linear-gradient(135deg, #22D3EE 0%, #3B82F6 100%);
+  --grad-text:    linear-gradient(90deg, #8B5CF6 0%, #22D3EE 100%);
+
+  --font-sans: 'IRANSansX', 'Vazirmatn', Tahoma, 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --fs-h1:      28px;  --lh-h1:      1.35;  --fw-h1:      700;
+  --fs-h2:      20px;  --lh-h2:      1.40;  --fw-h2:      600;
+  --fs-h3:      18px;  --lh-h3:      1.45;  --fw-h3:      600;
+  --fs-body:    16px;  --lh-body:    1.60;  --fw-body:    400;
+  --fs-caption: 14px;  --lh-caption: 1.50;  --fw-caption: 400;
+  --fs-small:   12px;  --lh-small:   1.40;  --fw-small:   400;
+  --fs-btn:     16px;  --fw-btn:     600;
+  --fs-micro:   11px;
+
+  --sp-0:  0;
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-8:  32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+
+  --r-xs:   6px;
+  --r-sm:   10px;
+  --r-md:   14px;
+  --r-lg:   18px;
+  --r-xl:   24px;
+  --r-full: 9999px;
+
+  --sh-sm:   0 1px 2px rgba(0, 0, 0, 0.25);
+  --sh-md:   0 4px 14px rgba(0, 0, 0, 0.30);
+  --sh-lg:   0 10px 30px rgba(0, 0, 0, 0.40);
+  --sh-xl:   0 20px 50px rgba(0, 0, 0, 0.55);
+  --sh-glow: 0 0 24px var(--c-primary-glow);
+
+  --dur-instant: 80ms;
+  --dur-fast:    120ms;
+  --dur-base:    200ms;
+  --dur-slow:    320ms;
+  --dur-slower:  480ms;
+
+  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:    cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-inout: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --blur-sm: 4px;
+  --blur-md: 14px;
+  --blur-lg: 20px;
+
+  --container-max: 480px;
+  --navbar-h:      56px;
+  --bottom-nav-h:  64px;
+
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-right:  env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left, 0px);
+
+  --z-base:    1;
+  --z-navbar:  100;
+  --z-bottom:  100;
+  --z-sheet:   500;
+  --z-modal:   600;
+  --z-toast:   700;
+  --z-max:     9999;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-instant: 1ms;
+    --dur-fast:    1ms;
+    --dur-base:    1ms;
+    --dur-slow:    1ms;
+    --dur-slower:  1ms;
+  }
+}

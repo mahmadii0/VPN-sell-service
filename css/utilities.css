@@ -1,0 +1,64 @@
+
+   /* PULSE VPN — Utility Helpers */
+   
+
+@layer utilities {
+
+  /* ---------- Container ---------- */
+  .pulse-container {
+    width: 100%;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--sp-4);
+  }
+
+  /* ---------- Screen-reader only ---------- */
+  .hidden-sr {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ---------- Body lock when sheet/modal open ---------- */
+  .no-scroll { overflow: hidden !important; }
+
+  /* ---------- Safe area helpers ---------- */
+  .pt-safe { padding-top: var(--safe-top); }
+  .pb-safe { padding-bottom: var(--safe-bottom); }
+  .pb-bottom-nav {
+    padding-bottom: calc(var(--bottom-nav-h) + var(--safe-bottom) + var(--sp-4));
+  }
+
+  /* ---------- Gradient backgrounds ---------- */
+  .bg-gradient-brand   { background: var(--grad-brand); }
+  .bg-gradient-primary { background: var(--grad-primary); }
+  .bg-gradient-accent  { background: var(--grad-accent); }
+
+  /* ---------- Text alignment (RTL-aware) ---------- */
+  .text-start { text-align: right; }
+  .text-end   { text-align: left; }
+
+  /* ---------- Numbers (Latin digits, LTR-isolated) ---------- */
+  .pulse-num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+    direction: ltr;
+    unicode-bidi: isolate;
+    display: inline-block;
+  }
+
+  /* ---------- Entrance animation helper ---------- */
+  .fade-in {
+    animation: pulse-fade-in var(--dur-slow) var(--ease-out) both;
+  }
+
+  /* ---------- Performance helpers ---------- */
+  .cv-auto { content-visibility: auto; contain-intrinsic-size: 300px; }
+  .contain-paint { contain: paint; }
+}
