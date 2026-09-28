@@ -2,10 +2,9 @@ import { getState, setState, subscribe } from '../state/store.js';
 import { backButton, hideBackButton } from '../services/telegram.js';
 
 const registry = new Map();
-const history = [];
-
 let mountNode = null;
 let currentCleanup = null;
+let pendingParams = null;
 
 export function register(id, renderFn) {
   registry.set(id, renderFn);
@@ -13,7 +12,41 @@ export function register(id, renderFn) {
 
 export function init(mount) {
   mountNode = mount;
+
+  if (!window.location.hash) {
+    history.replaceState(null, '', '#/home');
+  }
+
+  window.addEventListener('hashchange', handleHashChange);
+
+  const initialId = parseHash();
+  if (initialId && registry.has(initialId) && initialId !== getState().currentScreen) {
+    setState({ currentScreen: initialId });
+  }
+
   subscribe((state) => render(state.currentScreen, state.screenParams));
+  syncBackButton();
+}
+
+function parseHash() {
+  const raw = window.location.hash.replace(/^#\/?/, '').trim();
+  return raw || null;
+}
+
+function handleHashChange() {
+  const id = parseHash();
+
+  if (!id || !registry.has(id)) {
+    window.location.hash = '#/home';
+    return;
+  }
+
+  setState({
+    currentScreen: id,
+    screenParams: pendingParams
+  });
+  pendingParams = null;
+  syncBackButton();
 }
 
 export function navigate(id, params = null) {
@@ -21,30 +54,49 @@ export function navigate(id, params = null) {
     console.warn(`[router] Unknown screen: ${id}`);
     return;
   }
-  const current = getState();
-  if (current.currentScreen !== id) {
-    history.push({ screenId: current.currentScreen, params: current.screenParams });
+
+  const targetHash = `#/${id}`;
+
+  if (window.location.hash === targetHash) {
+    if (params !== null) setState({ screenParams: params });
+    return;
   }
-  setState({ currentScreen: id, screenParams: params });
-  syncBackButton();
+
+  pendingParams = params;
+  window.location.hash = targetHash;
 }
 
 export function back() {
-  const prev = history.pop();
-  if (!prev) return;
-  setState({ currentScreen: prev.screenId, screenParams: prev.params });
-  syncBackButton();
+  if (window.history.length <= 1) {
+    navigate('home');
+    return;
+  }
+  window.history.back();
 }
 
 export function reset(id, params = null) {
-  history.length = 0;
+  if (!registry.has(id)) return;
+
+  const targetHash = `#/${id}`;
+  const currentScreen = getState().currentScreen;
+
+  if (window.location.hash === targetHash && currentScreen === id) {
+    if (params !== null) setState({ screenParams: params });
+    return;
+  }
+
+  history.replaceState(null, '', targetHash);
   setState({ currentScreen: id, screenParams: params });
   syncBackButton();
 }
 
 function syncBackButton() {
-  if (history.length === 0) hideBackButton();
-  else backButton({ onClick: back, show: true });
+  const screen = getState().currentScreen;
+  if (screen === 'home') {
+    hideBackButton();
+  } else {
+    backButton({ onClick: () => back(), show: true });
+  }
 }
 
 async function render(screenId, params) {
@@ -67,6 +119,5 @@ async function render(screenId, params) {
     if (node instanceof Node) mountNode.appendChild(node);
   } catch (err) {
     console.error('[router] render error:', err);
-    mountNode.innerHTML = '<div class="pulse-page-section" style="padding-top:40px;text-align:center;color:#94A3B8">خطا در بارگذاری صفحه</div>';
   }
 }
