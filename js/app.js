@@ -1,27 +1,9 @@
-import { APP, TELEGRAM, isDev } from './core/config.js';
-
-function getTelegram() {
-  return window.Telegram?.WebApp ?? null;
-}
-
-function bootstrapTelegram() {
-  const tg = getTelegram();
-  if (!tg) {
-    if (isDev()) console.info('[Telegram] SDK not detected — browser mode.');
-    return null;
-  }
-
-  try {
-    tg.ready();
-    tg.expand();
-    tg.setHeaderColor?.(TELEGRAM.themeColors.header);
-    tg.setBackgroundColor?.(TELEGRAM.themeColors.background);
-  } catch (err) {
-    console.warn('[Telegram] Bootstrap warning:', err);
-  }
-
-  return tg;
-}
+import { APP, isDev } from './core/config.js';
+import { SCREENS } from './core/constants.js';
+import * as router from './core/router.js';
+import { renderBottomNav } from './components/bottomNav.js';
+import { renderHome } from './pages/home.js';
+import { ready as telegramReady, isAvailable as telegramAvailable } from './services/telegram.js';
 
 function logBootSignature() {
   console.log(
@@ -34,15 +16,34 @@ function installErrorBoundary() {
   window.addEventListener('error', (e) => {
     console.error('[PULSE] Uncaught:', e.error ?? e.message);
   });
-
   window.addEventListener('unhandledrejection', (e) => {
     console.error('[PULSE] Unhandled rejection:', e.reason);
   });
 }
 
+function registerScreens() {
+  router.register(SCREENS.HOME, renderHome);
+  // Next screens will be registered here as they arrive.
+}
+
 function main() {
   installErrorBoundary();
-  bootstrapTelegram();
+
+  if (telegramAvailable()) telegramReady();
+  else if (isDev()) console.info('[Telegram] SDK not detected — browser mode.');
+
+  const screenRoot = document.getElementById('screen-root');
+  const navRoot = document.getElementById('bottom-nav');
+
+  if (!screenRoot || !navRoot) {
+    console.error('[app] Shell not found');
+    return;
+  }
+
+  registerScreens();
+  renderBottomNav(navRoot);
+  router.init(screenRoot);
+
   logBootSignature();
 }
 

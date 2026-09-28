@@ -11,33 +11,21 @@
 
   <link rel="icon" type="image/jpeg" href="assets/images/pulse-logo.jpg" />
 
-  <!-- Critical network hints (performance) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://cdn.tailwindcss.com" />
   <link rel="preconnect" href="https://telegram.org" />
 
-  <!-- Fonts: Vazirmatn fallback from Google Fonts -->
   <link
     rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap"
-    media="print"
-    onload="this.media='all'"
   />
-  <noscript>
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap"
-    />
-  </noscript>
 
-  <!-- Tailwind CDN (runtime JIT) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    /* Tailwind runtime config — keep minimal to preserve performance */
     if (window.tailwind) {
       window.tailwind.config = {
-        corePlugins: { preflight: false }, // our base.css handles reset
+        corePlugins: { preflight: false },
         theme: {
           extend: {
             fontFamily: { sans: ['IRANSansX', 'Vazirmatn', 'Tahoma', 'sans-serif'] }
@@ -47,33 +35,35 @@
     }
   </script>
 
-  <!-- Telegram Mini App SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- App Styles -->
   <link rel="stylesheet" href="css/tokens.css" />
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/pages.css" />
   <link rel="stylesheet" href="css/utilities.css" />
 </head>
 <body>
-  <a href="#app" class="hidden-sr">پرش به محتوای اصلی</a>
+  <a href="#screen-root" class="hidden-sr">پرش به محتوای اصلی</a>
 
   <main id="app" class="pulse-app" role="main">
-    <div class="pulse-boot" aria-live="polite">
-      <div class="pulse-boot__logo">
-        <img
-          src="assets/images/pulse-logo.jpg"
-          alt="PULSE VPN"
-          width="160"
-          height="160"
-          decoding="async"
-        />
+    <div id="screen-root">
+      <div class="pulse-boot" aria-live="polite">
+        <div class="pulse-boot__logo">
+          <img
+            src="assets/images/pulse-logo.jpg"
+            alt="PULSE VPN"
+            width="160"
+            height="160"
+            decoding="async"
+          />
+        </div>
+        <h1 class="pulse-boot__title">PULSE VPN</h1>
+        <p class="pulse-boot__tagline">اتصال امن، آزادی بیشتر</p>
       </div>
-      <h1 class="pulse-boot__title">PULSE VPN</h1>
-      <p class="pulse-boot__tagline">اتصال امن، آزادی بیشتر</p>
-      <p class="pulse-boot__meta">در حال راه‌اندازی…</p>
     </div>
+
+    <nav id="bottom-nav" role="navigation" aria-label="ناوبری اصلی"></nav>
   </main>
 
   <noscript>
@@ -85,4 +75,3 @@
   <script type="module" src="js/app.js"></script>
 </body>
 </html>
-
