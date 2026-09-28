@@ -37,3 +37,12 @@ export function isDev() {
   const host = window.location.hostname;
   return host === 'localhost' || host === '127.0.0.1' || host === '';
 }
+
+export const API = Object.freeze({
+  baseUrl: '',            // در دیپلوی پر می‌شود — خالی = Same Origin
+  timeout: 15000,
+  retry: Object.freeze({
+    attempts: 2,
+    delayMs: 400
+  })
+});
