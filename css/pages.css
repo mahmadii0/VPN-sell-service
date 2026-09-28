@@ -1,7 +1,4 @@
 
-   /* PULSE VPN — Page-level styles */
-   
-
 .pulse-page {
   display: flex;
   flex-direction: column;
@@ -10,11 +7,21 @@
   animation: pulse-fade-in var(--dur-slow) var(--ease-out) both;
 }
 
-.pulse-page-section {
-  padding-inline: var(--sp-4);
+/* ---------- Page Header (used by Duration, Custom, Checkout, ...) ---------- */
+.pulse-page-header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  padding-top: calc(var(--sp-3) + var(--safe-top));
 }
 
-/* ----- Home header ----- */
+.pulse-page-header__title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* ---------- Home header ---------- */
 .pulse-home-header {
   display: flex;
   align-items: center;
@@ -33,18 +40,16 @@
 
 .pulse-home-header__info { flex: 1; min-width: 0; }
 .pulse-home-header__name { font-size: 15px; font-weight: 700; line-height: 1.2; }
-.pulse-home-header__tagline { font-size: var(--fs-micro); color: var(--c-text-muted); margin-top: 2px; }
-
-.pulse-home-header__avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+.pulse-home-header__tagline {
+  font-size: var(--fs-micro);
+  color: var(--c-text-muted);
+  margin-top: 2px;
   overflow: hidden;
-  padding: 0;
-  flex-shrink: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* ----- Wallet card ----- */
+/* ---------- Wallet card ---------- */
 .pulse-wallet-card {
   display: flex;
   align-items: center;
@@ -68,36 +73,7 @@
 .pulse-wallet-card__label { font-size: var(--fs-micro); color: var(--c-text-muted); }
 .pulse-wallet-card__balance { font-size: 17px; font-weight: 700; margin-top: 2px; }
 
-/* ----- Subscription card ----- */
-.pulse-sub-card__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--sp-4);
-}
-
-.pulse-sub-card__title { font-size: 15px; font-weight: 600; }
-
-.pulse-sub-card__row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: var(--fs-caption);
-  margin-bottom: var(--sp-2);
-}
-
-.pulse-sub-card__row--spaced { margin-top: var(--sp-4); }
-.pulse-sub-card__value { font-weight: 600; }
-.pulse-sub-card__muted { color: var(--c-text-muted); }
-
-/* ----- Quick actions ----- */
-.pulse-quick-actions {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--sp-2);
-  padding-inline: var(--sp-4);
-}
-
+/* ---------- Quick actions ---------- */
 .pulse-quick-action {
   display: flex;
   flex-direction: column;
@@ -129,4 +105,119 @@
   border-radius: 50%;
   background: var(--c-primary-soft);
   color: var(--c-primary);
+}
+
+/* ---------- Info box (used by Duration, Custom, ...) ---------- */
+.pulse-info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--c-surface-2);
+  border: 1px solid rgba(34, 211, 238, 0.18);
+  border-radius: var(--r-lg);
+}
+
+.pulse-info-box__icon {
+  flex-shrink: 0;
+  color: var(--c-accent);
+  margin-top: 2px;
+}
+
+.pulse-info-box__text {
+  flex: 1;
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  color: var(--c-text-muted);
+}
+
+.pulse-info-box__link {
+  color: var(--c-accent);
+  font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.pulse-info-box__link:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ---------- Section spacer / padding ---------- */
+.pulse-page-section { padding-inline: var(--sp-4); }
+.pulse-page-row     { display: flex; flex-direction: column; gap: var(--sp-3); padding-inline: var(--sp-4); }
+
+/* ---------- Section titles ---------- */
+.pulse-section-label {
+  font-size: var(--fs-caption);
+  color: var(--c-text-muted);
+  font-weight: 500;
+  padding-inline: var(--sp-4);
+}
+
+/* ---------- Home subscription card ---------- */
+.pulse-home-sub__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--sp-4);
+}
+
+.pulse-home-sub__title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.pulse-home-sub__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--fs-caption);
+  margin-bottom: var(--sp-2);
+}
+
+.pulse-home-sub__row--spaced { margin-top: var(--sp-4); margin-bottom: 0; }
+.pulse-home-sub__label { color: var(--c-text-muted); }
+.pulse-home-sub__value { font-weight: 600; }
+
+/* ---------- Duration intro text ---------- */
+.pulse-duration-intro {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  color: var(--c-text-muted);
+}
+
+/* ---------- Plan card chevron ---------- */
+.pulse-plan-card__chevron {
+  flex-shrink: 0;
+  color: var(--c-text-dim);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Small helpers ---------- */
+.pulse-mt-2 { margin-top: var(--sp-2); }
+
+/* ---------- Home header avatar button ---------- */
+.pulse-home-header__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  padding: 0;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ---------- Quick actions grid ---------- */
+.pulse-quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-2);
+  padding-inline: var(--sp-4);
 }

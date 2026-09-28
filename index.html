@@ -66,6 +66,174 @@
     <nav id="bottom-nav" role="navigation" aria-label="ناوبری اصلی"></nav>
   </main>
 
+  <!-- ============================================================
+       TEMPLATES
+       ============================================================ -->
+
+  <!-- ========== HOME ========== -->
+  <template id="tpl-home">
+    <div class="pulse-page">
+
+      <header class="pulse-home-header">
+        <img
+          src="assets/images/pulse-logo.jpg"
+          alt="PULSE VPN"
+          width="40"
+          height="40"
+          decoding="async"
+          class="pulse-home-header__logo"
+        />
+
+        <div class="pulse-home-header__info">
+          <div class="pulse-home-header__name">PULSE VPN</div>
+          <div class="pulse-home-header__tagline">اتصال امن، آزادی بیشتر</div>
+        </div>
+
+        <button type="button" class="pulse-icon-btn" data-action="notifications" aria-label="اعلان‌ها"></button>
+
+        <button
+          type="button"
+          class="pulse-home-header__avatar"
+          data-action="account"
+          aria-label="پروفایل"
+        >
+          <div class="pulse-avatar pulse-avatar--md" data-bind="avatarInitial">پ</div>
+        </button>
+      </header>
+
+      <div class="pulse-card pulse-wallet-card">
+        <div class="pulse-wallet-card__icon" data-icon="wallet"></div>
+        <div class="pulse-wallet-card__body">
+          <div class="pulse-wallet-card__label">موجودی کیف پول</div>
+          <div class="pulse-wallet-card__balance pulse-num" data-bind="walletBalance">0 تومان</div>
+        </div>
+        <button type="button" class="pulse-btn pulse-btn--accent pulse-btn--sm" data-action="wallet">شارژ</button>
+      </div>
+
+      <section class="pulse-page-section" data-slot="subscription"></section>
+
+      <div class="pulse-page-section">
+        <button
+          type="button"
+          class="pulse-btn pulse-btn--primary pulse-btn--lg pulse-btn--block"
+          data-action="buy"
+        >
+          <span data-icon="sparkles" class="shrink-0"></span>
+          <span>خرید اشتراک</span>
+        </button>
+      </div>
+
+      <div class="pulse-quick-actions" data-slot="quickActions"></div>
+
+    </div>
+  </template>
+
+  <!-- ========== HOME / SUBSCRIPTION STATES ========== -->
+  <template id="tpl-home-sub-empty">
+    <div class="pulse-card">
+      <div class="pulse-empty">
+        <div class="pulse-empty__icon" data-icon="package"></div>
+        <div class="pulse-empty__title">هنوز اشتراکی نداری</div>
+        <div class="pulse-empty__text">با خرید اولین اشتراک، اتصال امن و پرسرعت را تجربه کن.</div>
+        <button type="button" class="pulse-btn pulse-btn--primary" data-action="buy">خرید اولین اشتراک</button>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-home-sub-active">
+    <div class="pulse-card">
+      <div class="pulse-home-sub__header">
+        <div class="pulse-home-sub__title">اشتراک فعال</div>
+        <span class="pulse-chip pulse-chip--active">
+          <span class="pulse-chip__dot"></span>
+          <span>فعال</span>
+        </span>
+      </div>
+
+      <div class="pulse-home-sub__row">
+        <span class="pulse-home-sub__label">مصرف</span>
+        <span class="pulse-home-sub__value pulse-num" data-bind="usage">0 از 0 گیگابایت</span>
+      </div>
+
+      <div class="pulse-progress">
+        <div class="pulse-progress__fill" data-bind="usageBar"></div>
+      </div>
+
+      <div class="pulse-home-sub__row pulse-home-sub__row--spaced">
+        <span class="pulse-home-sub__label">زمان باقی‌مانده</span>
+        <span class="pulse-home-sub__value pulse-num" data-bind="daysLeft">0 روز</span>
+      </div>
+    </div>
+  </template>
+
+  <!-- ========== QUICK ACTION ITEM ========== -->
+  <template id="tpl-quick-action">
+    <button type="button" class="pulse-quick-action">
+      <div class="pulse-quick-action__icon" data-icon></div>
+      <span data-label></span>
+    </button>
+  </template>
+
+  <!-- ========== BOTTOM NAV ITEM ========== -->
+  <template id="tpl-bottom-nav-item">
+    <button type="button" class="pulse-bottom-nav__item">
+      <span data-icon></span>
+      <span data-label></span>
+    </button>
+  </template>
+
+  <template id="tpl-duration">
+    <div class="pulse-page">
+
+      <header class="pulse-page-header">
+        <button type="button" class="pulse-icon-btn" data-action="back" aria-label="بازگشت"></button>
+        <h1 class="pulse-page-header__title">انتخاب مدت اشتراک</h1>
+      </header>
+
+      <div class="pulse-page-section">
+        <p class="pulse-duration-intro">
+          مدت اشتراک خود را انتخاب کنید. با انتخاب مدت بیشتر، قیمت هر گیگابایت به صرفه‌تر می‌شود.
+        </p>
+      </div>
+
+      <div class="pulse-page-row" data-slot="durations"></div>
+
+      <div class="pulse-page-section">
+        <div class="pulse-info-box">
+          <span class="pulse-info-box__icon" data-icon="info"></span>
+          <div class="pulse-info-box__text">
+            مدت‌های ۴، ۵ و ۶ ماهه نیز در
+            <button type="button" class="pulse-info-box__link" data-action="custom">پلن سفارشی</button>
+            قابل انتخاب هستند.
+          </div>
+        </div>
+      </div>
+
+      <div class="pulse-page-section pulse-mt-2">
+        <button
+          type="button"
+          class="pulse-btn pulse-btn--primary pulse-btn--lg pulse-btn--block"
+          data-action="continue"
+          disabled
+        >
+          ادامه
+        </button>
+      </div>
+
+    </div>
+  </template>
+
+  <template id="tpl-duration-card">
+    <button type="button" class="pulse-plan-card">
+      <div class="pulse-plan-card__radio"></div>
+      <div class="pulse-plan-card__body">
+        <div class="pulse-plan-card__volume" data-bind="title"></div>
+        <div class="pulse-plan-card__meta" data-bind="rate"></div>
+      </div>
+      <span class="pulse-plan-card__chevron" data-icon="chevronLeft"></span>
+    </button>
+  </template>
+
   <noscript>
     <div class="pulse-noscript">
       برای استفاده از PULSE VPN، لطفاً جاوااسکریپت مرورگر خود را فعال کنید.

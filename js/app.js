@@ -3,6 +3,7 @@ import { SCREENS } from './core/constants.js';
 import * as router from './core/router.js';
 import { renderBottomNav } from './components/bottomNav.js';
 import { renderHome } from './pages/home.js';
+import { renderDuration } from './pages/duration.js';
 import { ready as telegramReady, isAvailable as telegramAvailable } from './services/telegram.js';
 
 function logBootSignature() {
@@ -23,7 +24,7 @@ function installErrorBoundary() {
 
 function registerScreens() {
   router.register(SCREENS.HOME, renderHome);
-  // Next screens will be registered here as they arrive.
+  router.register(SCREENS.DURATION, renderDuration);
 }
 
 function main() {
