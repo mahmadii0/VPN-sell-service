@@ -7,7 +7,7 @@
   animation: pulse-fade-in var(--dur-slow) var(--ease-out) both;
 }
 
-/* ---------- Page Header (used by Duration, Custom, Checkout, ...) ---------- */
+/* ---------- Page header ---------- */
 .pulse-page-header {
   display: flex;
   align-items: center;
@@ -16,10 +16,7 @@
   padding-top: calc(var(--sp-3) + var(--safe-top));
 }
 
-.pulse-page-header__title {
-  font-size: 18px;
-  font-weight: 700;
-}
+.pulse-page-header__title { font-size: 18px; font-weight: 700; }
 
 /* ---------- Home header ---------- */
 .pulse-home-header {
@@ -49,6 +46,18 @@
   white-space: nowrap;
 }
 
+.pulse-home-header__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  padding: 0;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
 /* ---------- Wallet card ---------- */
 .pulse-wallet-card {
   display: flex;
@@ -73,7 +82,36 @@
 .pulse-wallet-card__label { font-size: var(--fs-micro); color: var(--c-text-muted); }
 .pulse-wallet-card__balance { font-size: 17px; font-weight: 700; margin-top: 2px; }
 
+/* ---------- Home subscription card ---------- */
+.pulse-home-sub__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--sp-4);
+}
+
+.pulse-home-sub__title { font-size: 15px; font-weight: 600; }
+
+.pulse-home-sub__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--fs-caption);
+  margin-bottom: var(--sp-2);
+}
+
+.pulse-home-sub__row--spaced { margin-top: var(--sp-4); margin-bottom: 0; }
+.pulse-home-sub__label { color: var(--c-text-muted); }
+.pulse-home-sub__value { font-weight: 600; }
+
 /* ---------- Quick actions ---------- */
+.pulse-quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-2);
+  padding-inline: var(--sp-4);
+}
+
 .pulse-quick-action {
   display: flex;
   flex-direction: column;
@@ -107,7 +145,7 @@
   color: var(--c-primary);
 }
 
-/* ---------- Info box (used by Duration, Custom, ...) ---------- */
+/* ---------- Info box ---------- */
 .pulse-info-box {
   display: flex;
   align-items: flex-start;
@@ -145,42 +183,24 @@
   text-underline-offset: 2px;
 }
 
-/* ---------- Section spacer / padding ---------- */
-.pulse-page-section { padding-inline: var(--sp-4); }
-.pulse-page-row     { display: flex; flex-direction: column; gap: var(--sp-3); padding-inline: var(--sp-4); }
+.pulse-info-box--warning {
+  background: var(--c-warning-soft);
+  border-color: rgba(245, 158, 11, 0.35);
+}
 
-/* ---------- Section titles ---------- */
+.pulse-info-box--warning .pulse-info-box__icon { color: var(--c-warning); }
+
+/* ---------- Layout helpers ---------- */
+.pulse-page-section { padding-inline: var(--sp-4); }
+.pulse-page-row { display: flex; flex-direction: column; gap: var(--sp-3); padding-inline: var(--sp-4); }
+.pulse-mt-2 { margin-top: var(--sp-2); }
+
 .pulse-section-label {
   font-size: var(--fs-caption);
   color: var(--c-text-muted);
   font-weight: 500;
-  padding-inline: var(--sp-4);
+  margin-bottom: var(--sp-3);
 }
-
-/* ---------- Home subscription card ---------- */
-.pulse-home-sub__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--sp-4);
-}
-
-.pulse-home-sub__title {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.pulse-home-sub__row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: var(--fs-caption);
-  margin-bottom: var(--sp-2);
-}
-
-.pulse-home-sub__row--spaced { margin-top: var(--sp-4); margin-bottom: 0; }
-.pulse-home-sub__label { color: var(--c-text-muted); }
-.pulse-home-sub__value { font-weight: 600; }
 
 /* ---------- Duration intro text ---------- */
 .pulse-duration-intro {
@@ -198,26 +218,140 @@
   justify-content: center;
 }
 
-/* ---------- Small helpers ---------- */
-.pulse-mt-2 { margin-top: var(--sp-2); }
-
-/* ---------- Home header avatar button ---------- */
-.pulse-home-header__avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  padding: 0;
-  flex-shrink: 0;
-  overflow: hidden;
-  background: none;
-  border: none;
-  cursor: pointer;
+/* ---------- Custom Plan: Rate chips ---------- */
+.pulse-rate-chips {
+  display: flex;
+  gap: var(--sp-2);
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
 }
 
-/* ---------- Quick actions grid ---------- */
-.pulse-quick-actions {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--sp-2);
-  padding-inline: var(--sp-4);
+.pulse-rate-chips::-webkit-scrollbar { display: none; }
+
+.pulse-rate-chip {
+  flex: 1 0 auto;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border);
+  color: var(--c-text-muted);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out);
+}
+
+.pulse-rate-chip.is-active {
+  background: var(--c-primary-soft);
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+  font-weight: 600;
+}
+
+/* ---------- Suggested Plans: Custom CTA ---------- */
+.pulse-custom-cta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: var(--sp-4);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  border: 1.5px dashed var(--c-border-strong);
+  color: var(--c-text);
+  text-align: right;
+  transition: border-color var(--dur-base) var(--ease-out);
+}
+
+.pulse-custom-cta:hover {
+  border-color: var(--c-primary);
+}
+
+.pulse-custom-cta__icon {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm);
+  background: var(--c-secondary-soft);
+  color: var(--c-secondary);
+  flex-shrink: 0;
+}
+
+.pulse-custom-cta__body { flex: 1; min-width: 0; }
+.pulse-custom-cta__title { font-size: 15px; font-weight: 600; }
+.pulse-custom-cta__text {
+  font-size: var(--fs-small);
+  color: var(--c-text-muted);
+  margin-top: 2px;
+}
+
+.pulse-custom-cta__chevron {
+  flex-shrink: 0;
+  color: var(--c-text-dim);
+  display: inline-flex;
+}
+
+/* ---------- Checkout: Summary rows ---------- */
+.pulse-checkout-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sp-2) 0;
+  font-size: var(--fs-caption);
+}
+
+.pulse-checkout-row:not(:last-child) {
+  border-bottom: 1px solid var(--c-border);
+}
+
+.pulse-checkout-row__label { color: var(--c-text-muted); }
+.pulse-checkout-row__value { font-weight: 600; }
+
+/* ---------- Checkout: Payment method ---------- */
+.pulse-payment-method {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-primary);
+  border-radius: var(--r-lg);
+}
+
+.pulse-payment-method__icon {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm);
+  background: var(--c-primary-soft);
+  color: var(--c-primary);
+  flex-shrink: 0;
+}
+
+.pulse-payment-method__body { flex: 1; min-width: 0; }
+.pulse-payment-method__title { font-size: 14px; font-weight: 600; }
+.pulse-payment-method__text { font-size: var(--fs-small); color: var(--c-text-muted); margin-top: 2px; }
+
+.pulse-payment-method__check {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--c-primary);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pulse-payment-method__dot {
+  position: absolute;
+  inset: 3px;
+  background: var(--c-primary);
+  border-radius: 50%;
 }
