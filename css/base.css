@@ -1,13 +1,12 @@
 /* =========================================================
    PULSE VPN — Base Layer
-   Reset + Fonts + Body + App Container + Splash
+   Reset + Fonts + Body + App Container + Splash + Transitions
    ========================================================= */
 
 @layer reset, base, components, utilities;
 
 /* ============================================================
    FONT FACES
-   IRANSansX: local only. Silent fallback to Vazirmatn.
    ============================================================ */
 @layer base {
   @font-face {
@@ -50,13 +49,10 @@
     direction: rtl;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
-    scroll-behavior: smooth;
     text-size-adjust: 100%;
-    overflow-x: hidden;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
+    /* NOTE: no overflow-x here — keeps html as the natural scroll container.
+       Using overflow-x: clip (if needed) below on body avoids creating a
+       second scroll container that would trap wheel/touchpad events. */
   }
 
   body {
@@ -72,8 +68,10 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    overflow-x: hidden;
-    overscroll-behavior-y: none;
+
+    /* clip does NOT create a scroll container — prevents horizontal overflow
+       without breaking wheel/touchpad scrolling. */
+    overflow-x: clip;
   }
 
   h1, h2, h3, h4, h5, h6,
@@ -140,10 +138,7 @@
   }
   ::-webkit-scrollbar-thumb:hover { background: var(--c-text-dim); }
 
-  /* ---------- App Container ----------
-     Mobile: fills the viewport.
-     Tablet/Desktop: centered panel with a darker backdrop behind.
-     ------------------------------------ */
+  /* ---------- App Container ---------- */
   .pulse-app {
     position: relative;
     width: 100%;
@@ -157,7 +152,6 @@
     padding-right: var(--safe-right);
   }
 
-  /* Tablet and above: darker outer background + subtle border/shadow */
   @media (min-width: 768px) {
     body {
       background: var(--c-bg-outer);
@@ -170,7 +164,6 @@
     }
   }
 
-  /* Desktop: slightly taller shadow + border for panel look */
   @media (min-width: 1024px) {
     .pulse-app {
       box-shadow: 0 0 100px rgba(0, 0, 0, 0.65);
@@ -273,7 +266,6 @@
     }
   }
 
-  /* Landscape on small devices */
   @media (max-height: 480px) and (orientation: landscape) {
     .pulse-splash {
       flex-direction: row;
@@ -293,7 +285,7 @@
 }
 
 /* ============================================================
-   PAGE TRANSITIONS
+   PAGE TRANSITIONS (outside @layer so animations resolve by name)
    ============================================================ */
 @keyframes pulse-page-enter {
   from {
