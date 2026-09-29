@@ -4,6 +4,9 @@ import { navigate, back } from '../core/router.js';
 import { useTemplate, mountTemplate } from '../core/template.js';
 import { formatNumber, formatPrice, formatDate } from '../utils/format.js';
 import { iconNode } from '../components/icons.js';
+import { renderWithSkeleton } from '../utils/async.js';
+import { listSkeleton } from '../components/skeletons.js';
+import * as haptic from '../utils/haptic.js';
 
 const CONNECTION_LABEL = Object.freeze({
   normal: 'عادی',
@@ -25,7 +28,7 @@ export function renderMyPurchases() {
 
   fillStaticIcons(root);
   bindActions(root);
-  renderContent(root);
+  mountOrders(root);
 
   return frag;
 }
@@ -52,25 +55,30 @@ function bindActions(root) {
   });
 }
 
-function renderContent(root) {
+function mountOrders(root) {
   const slot = root.querySelector('[data-slot="content"]');
-  slot.innerHTML = '';
 
-  const orders = getState().orders ?? [];
-
-  if (!orders.length) {
-    const empty = mountTemplate(slot, 'tpl-purchases-empty');
-    fillStaticIcons(empty);
-    bindActions(empty);
-    return;
-  }
-
-  const wrapper = mountTemplate(slot, 'tpl-purchases-list');
-  renderOrders(wrapper, orders);
+  renderWithSkeleton({
+    screenId: 'my-purchases',
+    container: slot,
+    skeleton: listSkeleton(3),
+    load: async () => getState().orders ?? [],
+    render: (orders) => buildOrdersView(orders)
+  });
 }
 
-function renderOrders(wrapper, orders) {
-  const listSlot = wrapper.querySelector('[data-slot="orders"]');
+function buildOrdersView(orders) {
+  if (!orders || !orders.length) {
+    const wrap = document.createElement('div');
+    const empty = mountTemplate(wrap, 'tpl-purchases-empty');
+    fillStaticIcons(empty);
+    bindActions(empty);
+    return empty.parentElement || empty;
+  }
+
+  const wrap = document.createElement('div');
+  const list = mountTemplate(wrap, 'tpl-purchases-list');
+  const listSlot = list.querySelector('[data-slot="orders"]');
   const frag = document.createDocumentFragment();
 
   for (const order of orders) {
@@ -95,6 +103,7 @@ function renderOrders(wrapper, orders) {
     chip.innerHTML = `<span class="pulse-chip__dot"></span><span>${status.label}</span>`;
 
     node.addEventListener('click', () => {
+      haptic.tap();
       navigate(SCREENS.ORDER_DETAIL, { orderId: order.id });
     });
 
@@ -102,6 +111,7 @@ function renderOrders(wrapper, orders) {
   }
 
   listSlot.appendChild(frag);
+  return list;
 }
 
 function setText(root, key, value) {

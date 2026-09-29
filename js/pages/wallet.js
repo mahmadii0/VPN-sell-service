@@ -5,6 +5,9 @@ import { useTemplate, mountTemplate } from '../core/template.js';
 import { formatPrice, formatDate } from '../utils/format.js';
 import { iconNode } from '../components/icons.js';
 import { toast } from '../components/ui.js';
+import { renderWithSkeleton } from '../utils/async.js';
+import { listSkeleton } from '../components/skeletons.js';
+import * as haptic from '../utils/haptic.js';
 
 const TX_ICON = {
   charge: 'plus',
@@ -19,7 +22,7 @@ export function renderWallet() {
   fillStaticIcons(root);
   bindActions(root);
   fillBalance(root);
-  renderTransactions(root);
+  mountTransactions(root);
 
   return frag;
 }
@@ -42,7 +45,10 @@ function bindActions(root) {
     if (!trigger) return;
     const action = trigger.getAttribute('data-action');
     if (action === 'back') back();
-    else if (action === 'charge') toast('شارژ کیف پول به‌زودی فعال می‌شود', { variant: 'info' });
+    else if (action === 'charge') {
+      haptic.tap();
+      toast('شارژ کیف پول به‌زودی فعال می‌شود', { variant: 'info' });
+    }
   });
 }
 
@@ -51,20 +57,29 @@ function fillBalance(root) {
   if (el) el.textContent = formatPrice(getState().walletBalance ?? 0);
 }
 
-function renderTransactions(root) {
+function mountTransactions(root) {
   const slot = root.querySelector('[data-slot="content"]');
-  slot.innerHTML = '';
 
-  const txs = getState().walletTransactions ?? [];
+  renderWithSkeleton({
+    screenId: 'wallet-transactions',
+    container: slot,
+    skeleton: listSkeleton(3),
+    load: async () => getState().walletTransactions ?? [],
+    render: (txs) => buildTransactionsView(txs)
+  });
+}
 
-  if (!txs.length) {
-    const empty = mountTemplate(slot, 'tpl-wallet-empty');
+function buildTransactionsView(txs) {
+  if (!txs || !txs.length) {
+    const wrap = document.createElement('div');
+    const empty = mountTemplate(wrap, 'tpl-wallet-empty');
     fillStaticIcons(empty);
-    return;
+    return empty.parentElement || empty;
   }
 
-  const wrapper = mountTemplate(slot, 'tpl-wallet-tx-list');
-  const listSlot = wrapper.querySelector('[data-slot="transactions"]');
+  const wrap = document.createElement('div');
+  const list = mountTemplate(wrap, 'tpl-wallet-tx-list');
+  const listSlot = list.querySelector('[data-slot="transactions"]');
   const frag = document.createDocumentFragment();
 
   for (const tx of txs) {
@@ -90,6 +105,7 @@ function renderTransactions(root) {
   }
 
   listSlot.appendChild(frag);
+  return list;
 }
 
 function setText(root, key, value) {

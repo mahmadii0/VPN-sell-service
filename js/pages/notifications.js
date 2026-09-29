@@ -1,8 +1,12 @@
-import { back } from '../core/router.js';
-import { getState } from '../state/store.js';
+import { SCREENS } from '../core/constants.js';
+import { getState, setState } from '../state/store.js';
+import { navigate, back } from '../core/router.js';
 import { useTemplate, mountTemplate } from '../core/template.js';
 import { formatDate } from '../utils/format.js';
 import { iconNode } from '../components/icons.js';
+import { renderWithSkeleton } from '../utils/async.js';
+import { listSkeleton } from '../components/skeletons.js';
+import * as haptic from '../utils/haptic.js';
 
 const TYPE_ICON = {
   payment: 'creditCard',
@@ -17,7 +21,7 @@ export function renderNotifications() {
 
   fillStaticIcons(root);
   bindActions(root);
-  renderContent(root);
+  mountNotifications(root);
 
   return frag;
 }
@@ -39,20 +43,37 @@ function bindActions(root) {
   });
 }
 
-function renderContent(root) {
+function mountNotifications(root) {
   const slot = root.querySelector('[data-slot="content"]');
-  slot.innerHTML = '';
 
-  const items = getState().notifications ?? [];
+  renderWithSkeleton({
+    screenId: 'notifications',
+    container: slot,
+    skeleton: listSkeleton(3),
+    load: async () => {
+      const list = getState().notifications ?? [];
+      // Mark all as read on open
+      if (list.some((n) => !n.read)) {
+        const updated = list.map((n) => ({ ...n, read: true }));
+        setState({ notifications: updated });
+      }
+      return list;
+    },
+    render: (items) => buildNotificationsView(items)
+  });
+}
 
-  if (!items.length) {
-    mountTemplate(slot, 'tpl-notifications-empty');
-    fillStaticIcons(slot);
-    return;
+function buildNotificationsView(items) {
+  if (!items || !items.length) {
+    const wrap = document.createElement('div');
+    const empty = mountTemplate(wrap, 'tpl-notifications-empty');
+    fillStaticIcons(empty);
+    return empty.parentElement || empty;
   }
 
-  const wrapper = mountTemplate(slot, 'tpl-notifications-list');
-  const listSlot = wrapper.querySelector('[data-slot="items"]');
+  const wrap = document.createElement('div');
+  const list = mountTemplate(wrap, 'tpl-notifications-list');
+  const listSlot = list.querySelector('[data-slot="items"]');
   const frag = document.createDocumentFragment();
 
   for (const notif of items) {
@@ -65,12 +86,39 @@ function renderContent(root) {
       if (svg) iconSlot.replaceWith(svg);
     }
 
-    node.querySelector('[data-bind="title"]').textContent = notif.title || '';
-    node.querySelector('[data-bind="text"]').textContent = notif.text || '';
-    node.querySelector('[data-bind="date"]').textContent = formatDate(notif.date) || '';
+    setText(node, 'title', notif.title || '');
+    setText(node, 'text', notif.text || '');
+    setText(node, 'date', formatDate(notif.date) || '');
+
+    const target = resolveTarget(notif);
+    if (target) {
+      node.classList.add('is-clickable');
+      node.setAttribute('role', 'button');
+      node.tabIndex = 0;
+      node.addEventListener('click', () => {
+        haptic.tap();
+        navigate(target.screen, target.params);
+      });
+    }
 
     frag.appendChild(node);
   }
 
   listSlot.appendChild(frag);
+  return list;
+}
+
+function resolveTarget(notif) {
+  if (notif.orderId) {
+    return { screen: SCREENS.ORDER_DETAIL, params: { orderId: notif.orderId } };
+  }
+  if (notif.screen) {
+    return { screen: notif.screen, params: notif.params ?? null };
+  }
+  return null;
+}
+
+function setText(root, key, value) {
+  const el = root.querySelector(`[data-bind="${key}"]`);
+  if (el) el.textContent = value;
 }

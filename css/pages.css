@@ -1063,3 +1063,29 @@
   .pulse-support-card__icon { width: 38px; height: 38px; }
   .pulse-support-card__value { font-size: 14px; }
 }
+
+
+/* ---------- Clickable notification ---------- */
+.pulse-notif-item.is-clickable {
+  cursor: pointer;
+  transition:
+    border-color var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out);
+}
+
+.pulse-notif-item.is-clickable:hover {
+  border-color: var(--c-primary);
+  background: var(--c-surface-2);
+}
+
+.pulse-notif-item.is-clickable::after {
+  content: '';
+  align-self: center;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--c-text-dim);
+  border-bottom: 2px solid var(--c-text-dim);
+  transform: rotate(135deg);
+  margin-inline-start: var(--sp-2);
+  flex-shrink: 0;
+}
