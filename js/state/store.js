@@ -1,11 +1,9 @@
 import { SCREENS } from '../core/constants.js';
 
 const initialState = {
-  // Navigation
   currentScreen: SCREENS.HOME,
   screenParams: null,
 
-  // User data
   currentUser: null,
   walletBalance: 0,
   walletTransactions: [],
@@ -13,17 +11,14 @@ const initialState = {
   currentSubscription: null,
   orders: [],
 
-  // Purchase flow
   selectedDuration: null,
   selectedConnectionType: null,
   selectedPlan: null,
 
-  // Payment
   paymentMethod: null,
   paymentState: 'IDLE',
   paymentResult: null,
 
-  // UI feedback
   loading: {},
   errors: {}
 };

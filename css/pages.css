@@ -973,3 +973,22 @@
   margin-bottom: 4px;
 }
 .pulse-notif-item__date { font-size: var(--fs-micro); color: var(--c-text-dim); }
+
+/* ---------- Order detail header ---------- */
+.pulse-order-detail__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--sp-3);
+}
+
+.pulse-order-detail__id {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.pulse-order-detail__date {
+  font-size: var(--fs-small);
+  color: var(--c-text-muted);
+  margin-top: 4px;
+}

@@ -94,15 +94,14 @@ function renderOrders(wrapper, orders) {
     chip.className = `pulse-chip pulse-chip--${status.variant}`;
     chip.innerHTML = `<span class="pulse-chip__dot"></span><span>${status.label}</span>`;
 
-    node.addEventListener('click', () => openOrder(order));
+    node.addEventListener('click', () => {
+      navigate(SCREENS.ORDER_DETAIL, { orderId: order.id });
+    });
+
     frag.appendChild(node);
   }
 
   listSlot.appendChild(frag);
-}
-
-function openOrder(order) {
-  console.log('[order] tapped:', order.id);
 }
 
 function setText(root, key, value) {

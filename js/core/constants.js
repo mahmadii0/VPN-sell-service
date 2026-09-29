@@ -8,6 +8,7 @@ export const SCREENS = Object.freeze({
   PAYMENT_RESULT:   'payment-result',
   MY_SUBSCRIPTION:  'my-subscription',
   MY_PURCHASES:     'my-purchases',
+  ORDER_DETAIL:     'order-detail',
   WALLET:           'wallet',
   ACCOUNT:          'account',
   SUPPORT:          'support',

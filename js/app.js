@@ -11,6 +11,7 @@ import { renderReceiptUpload } from './pages/receiptUpload.js';
 import { renderPaymentResult } from './pages/paymentResult.js';
 import { renderMySubscription } from './pages/mySubscription.js';
 import { renderMyPurchases } from './pages/myPurchases.js';
+import { renderOrderDetail } from './pages/orderDetail.js';
 import { renderWallet } from './pages/wallet.js';
 import { renderAccount } from './pages/account.js';
 import { renderSupport } from './pages/support.js';
@@ -44,6 +45,7 @@ function registerScreens() {
   router.register(SCREENS.PAYMENT_RESULT, renderPaymentResult);
   router.register(SCREENS.MY_SUBSCRIPTION, renderMySubscription);
   router.register(SCREENS.MY_PURCHASES, renderMyPurchases);
+  router.register(SCREENS.ORDER_DETAIL, renderOrderDetail);
   router.register(SCREENS.WALLET, renderWallet);
   router.register(SCREENS.ACCOUNT, renderAccount);
   router.register(SCREENS.SUPPORT, renderSupport);
