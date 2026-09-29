@@ -59,18 +59,14 @@ function renderContent(root) {
   const orders = getState().orders ?? [];
 
   if (!orders.length) {
-    const empty = mountTemplate(slot, 'tpl-my-sub-empty-placeholder');
-    return renderEmpty(slot);
+    const empty = mountTemplate(slot, 'tpl-purchases-empty');
+    fillStaticIcons(empty);
+    bindActions(empty);
+    return;
   }
 
   const wrapper = mountTemplate(slot, 'tpl-purchases-list');
   renderOrders(wrapper, orders);
-}
-
-function renderEmpty(slot) {
-  const empty = mountTemplate(slot, 'tpl-purchases-empty');
-  fillStaticIcons(empty);
-  bindActions(empty);
 }
 
 function renderOrders(wrapper, orders) {
@@ -106,7 +102,6 @@ function renderOrders(wrapper, orders) {
 }
 
 function openOrder(order) {
-  // Order details will be added in a future commit.
   console.log('[order] tapped:', order.id);
 }
 

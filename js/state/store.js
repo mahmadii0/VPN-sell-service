@@ -5,19 +5,21 @@ const initialState = {
   currentScreen: SCREENS.HOME,
   screenParams: null,
 
-  // User
+  // User data
   currentUser: null,
   walletBalance: 0,
+  walletTransactions: [],
+  notifications: [],
   currentSubscription: null,
   orders: [],
 
   // Purchase flow
   selectedDuration: null,
+  selectedConnectionType: null,
   selectedPlan: null,
-  customVolume: 20,
-  customDuration: 1,
 
   // Payment
+  paymentMethod: null,
   paymentState: 'IDLE',
   paymentResult: null,
 
@@ -55,7 +57,6 @@ export function setState(patch) {
   notify();
 }
 
-// Shallow-merge a nested section (e.g. { loading: { x: true } })
 export function patch(section, values) {
   if (typeof values !== 'object' || values === null) return;
   state = { ...state, [section]: { ...state[section], ...values } };
@@ -65,9 +66,8 @@ export function patch(section, values) {
 export function resetPurchaseFlow() {
   setState({
     selectedDuration: null,
+    selectedConnectionType: null,
     selectedPlan: null,
-    customVolume: 20,
-    customDuration: 1,
     paymentResult: null
   });
 }

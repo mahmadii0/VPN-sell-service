@@ -1,155 +1,143 @@
-import { APP } from '../core/config.js';
 import { SCREENS } from '../core/constants.js';
-import { getState } from '../state/store.js';
+import { getState, subscribe } from '../state/store.js';
+import { navigate } from '../core/router.js';
+import { useTemplate, mountTemplate } from '../core/template.js';
 import { formatPrice, formatNumber, usagePercent } from '../utils/format.js';
 import { iconNode } from '../components/icons.js';
-import { Button, Card, Chip, EmptyState, Progress } from '../components/ui.js';
-import { el } from '../utils/dom.js';
-import { navigate } from '../core/router.js';
+
+const QUICK_ACTIONS = [
+  { icon: 'shield',   label: 'اشتراک من',  screen: SCREENS.MY_SUBSCRIPTION },
+  { icon: 'package',  label: 'خریدهای من', screen: SCREENS.MY_PURCHASES },
+  { icon: 'wallet',   label: 'کیف پول',    screen: SCREENS.WALLET },
+  { icon: 'lifeBuoy', label: 'پشتیبانی',   screen: SCREENS.SUPPORT }
+];
 
 export function renderHome() {
+  const frag = useTemplate('tpl-home');
+  const root = frag.firstElementChild;
+
+  fillIcons(root);
+  bindActions(root);
+  renderDynamic(root);
+  syncNotificationBadge(root);
+
+  const unsubscribe = subscribe(() => {
+    renderDynamic(root);
+    syncNotificationBadge(root);
+  });
+
+  return {
+    node: frag,
+    cleanup: unsubscribe
+  };
+}
+
+function fillIcons(root) {
+  root.querySelectorAll('[data-icon]').forEach((node) => {
+    const name = node.getAttribute('data-icon');
+    if (!name) return;
+    const size = node.classList.contains('pulse-wallet-card__icon') ? 22 : 18;
+    const svg = iconNode(name, { size });
+    if (svg) node.replaceWith(svg);
+  });
+}
+
+function bindActions(root) {
+  root.addEventListener('click', (e) => {
+    const trigger = e.target.closest('[data-action]');
+    if (!trigger) return;
+
+    const action = trigger.getAttribute('data-action');
+    const map = {
+      notifications: () => navigate(SCREENS.NOTIFICATIONS),
+      account:       () => navigate(SCREENS.ACCOUNT),
+      wallet:        () => navigate(SCREENS.WALLET),
+      buy:           () => navigate(SCREENS.DURATION)
+    };
+
+    map[action]?.();
+  });
+}
+
+function renderDynamic(root) {
   const { currentUser, walletBalance, currentSubscription } = getState();
 
-  return el('div', { class: 'pulse-page' }, [
-    HomeHeader(currentUser),
-    WalletCard(walletBalance),
-    SubscriptionSection(currentSubscription),
-    PrimaryCTA(),
-    QuickActions()
-  ]);
+  setAvatarInitial(root, currentUser);
+  setWalletBalance(root, walletBalance);
+  renderSubscription(root, currentSubscription);
+  renderQuickActions(root);
 }
 
-function HomeHeader(user) {
-  const initial = (user?.firstName?.[0] || 'پ').toUpperCase();
+function syncNotificationBadge(root) {
+  const { notifications = [] } = getState();
+  const hasUnread = notifications.some((n) => !n.read);
+  const btn = root.querySelector('[data-action="notifications"]');
+  if (!btn) return;
 
-  return el('header', { class: 'pulse-home-header' }, [
-    el('img', {
-      src: 'assets/images/pulse-logo.jpg',
-      alt: 'PULSE VPN',
-      class: 'pulse-home-header__logo',
-      width: 40,
-      height: 40,
-      decoding: 'async'
-    }),
-    el('div', { class: 'pulse-home-header__info' }, [
-      el('div', { class: 'pulse-home-header__name' }, APP.nameEn),
-      el('div', { class: 'pulse-home-header__tagline' }, APP.tagline)
-    ]),
-    el('button', {
-      type: 'button',
-      class: 'pulse-icon-btn',
-      'aria-label': 'اعلان‌ها',
-      onClick: () => navigate(SCREENS.NOTIFICATIONS)
-    }, [iconNode('bell', { size: 20 })]),
-    el('button', {
-      type: 'button',
-      class: 'pulse-home-header__avatar',
-      'aria-label': 'پروفایل',
-      onClick: () => navigate(SCREENS.ACCOUNT)
-    }, [
-      el('div', { class: 'pulse-avatar pulse-avatar--md' }, initial)
-    ])
-  ]);
+  const existing = btn.querySelector('.pulse-icon-btn__badge');
+  if (hasUnread && !existing) {
+    const badge = document.createElement('span');
+    badge.className = 'pulse-icon-btn__badge';
+    btn.appendChild(badge);
+  } else if (!hasUnread && existing) {
+    existing.remove();
+  }
 }
 
-function WalletCard(balance) {
-  return el('div', { class: 'pulse-card pulse-wallet-card' }, [
-    el('div', { class: 'pulse-wallet-card__icon' }, [iconNode('wallet', { size: 22 })]),
-    el('div', { class: 'pulse-wallet-card__body' }, [
-      el('div', { class: 'pulse-wallet-card__label' }, 'موجودی کیف پول'),
-      el('div', { class: 'pulse-wallet-card__balance pulse-num' }, formatPrice(balance))
-    ]),
-    Button({
-      label: 'شارژ',
-      variant: 'accent',
-      size: 'sm',
-      onClick: () => navigate(SCREENS.WALLET)
-    })
-  ]);
+function setAvatarInitial(root, user) {
+  const target = root.querySelector('[data-bind="avatarInitial"]');
+  if (target) target.textContent = (user?.firstName?.[0] || 'پ').toUpperCase();
 }
 
-function SubscriptionSection(sub) {
-  const section = el('section', { class: 'pulse-page-section' });
+function setWalletBalance(root, balance) {
+  const target = root.querySelector('[data-bind="walletBalance"]');
+  if (target) target.textContent = formatPrice(balance || 0);
+}
+
+function renderSubscription(root, sub) {
+  const slot = root.querySelector('[data-slot="subscription"]');
+  if (!slot) return;
 
   if (!sub) {
-    section.appendChild(
-      Card({
-        children: [
-          EmptyState({
-            iconName: 'package',
-            title: 'هنوز اشتراکی نداری',
-            text: 'با خرید اولین اشتراک، اتصال امن و پرسرعت را تجربه کن.',
-            actionLabel: 'خرید اولین اشتراک',
-            onAction: () => navigate(SCREENS.DURATION)
-          })
-        ]
-      })
-    );
-    return section;
+    const empty = mountTemplate(slot, 'tpl-home-sub-empty');
+    fillIcons(empty);
+    bindActions(empty);
+    return;
   }
 
+  const node = mountTemplate(slot, 'tpl-home-sub-active');
   const used = Number(sub.usedGB) || 0;
   const total = Number(sub.totalGB) || 0;
   const daysLeft = Number(sub.daysLeft) || 0;
   const pct = usagePercent(used, total);
 
-  section.appendChild(
-    Card({
-      children: [
-        el('div', { class: 'pulse-sub-card__header' }, [
-          el('div', { class: 'pulse-sub-card__title' }, 'اشتراک فعال'),
-          Chip({ label: 'فعال', variant: 'active', dot: true })
-        ]),
-        el('div', { class: 'pulse-sub-card__row' }, [
-          el('span', { class: 'pulse-sub-card__muted' }, 'مصرف'),
-          el('span', { class: 'pulse-sub-card__value pulse-num' },
-            `${formatNumber(used)} از ${formatNumber(total)} گیگابایت`)
-        ]),
-        Progress({ value: pct }),
-        el('div', { class: 'pulse-sub-card__row pulse-sub-card__row--spaced' }, [
-          el('span', { class: 'pulse-sub-card__muted' }, 'زمان باقی‌مانده'),
-          el('span', { class: 'pulse-sub-card__value pulse-num' },
-            `${formatNumber(daysLeft)} روز`)
-        ])
-      ]
-    })
-  );
-
-  return section;
+  node.querySelector('[data-bind="usage"]').textContent =
+    `${formatNumber(used)} از ${formatNumber(total)} گیگابایت`;
+  node.querySelector('[data-bind="usageBar"]').style.width = `${pct}%`;
+  node.querySelector('[data-bind="daysLeft"]').textContent = `${formatNumber(daysLeft)} روز`;
 }
 
-function PrimaryCTA() {
-  return el('div', { class: 'pulse-page-section' }, [
-    Button({
-      label: 'خرید اشتراک',
-      variant: 'primary',
-      size: 'lg',
-      block: true,
-      iconName: 'sparkles',
-      onClick: () => navigate(SCREENS.DURATION)
-    })
-  ]);
-}
+function renderQuickActions(root) {
+  const slot = root.querySelector('[data-slot="quickActions"]');
+  if (!slot) return;
+  slot.innerHTML = '';
 
-function QuickActions() {
-  const items = [
-    { icon: 'shield',   label: 'اشتراک من',  screen: SCREENS.MY_SUBSCRIPTION },
-    { icon: 'package',  label: 'خریدهای من', screen: SCREENS.MY_PURCHASES },
-    { icon: 'wallet',   label: 'کیف پول',    screen: SCREENS.WALLET },
-    { icon: 'lifeBuoy', label: 'پشتیبانی',   screen: SCREENS.SUPPORT }
-  ];
+  const frag = document.createDocumentFragment();
 
-  return el('div', { class: 'pulse-quick-actions' },
-    items.map((item) =>
-      el('button', {
-        type: 'button',
-        class: 'pulse-quick-action',
-        'aria-label': item.label,
-        onClick: () => navigate(item.screen)
-      }, [
-        el('div', { class: 'pulse-quick-action__icon' }, [iconNode(item.icon, { size: 18 })]),
-        el('span', {}, item.label)
-      ])
-    )
-  );
+  for (const item of QUICK_ACTIONS) {
+    const tpl = useTemplate('tpl-quick-action');
+    const node = tpl.firstElementChild;
+
+    const iconSlot = node.querySelector('[data-icon]');
+    const iconSvg = iconNode(item.icon, { size: 18 });
+    if (iconSvg) iconSlot.replaceWith(iconSvg);
+
+    node.querySelector('[data-label]').textContent = item.label;
+    node.setAttribute('aria-label', item.label);
+    node.addEventListener('click', () => navigate(item.screen));
+
+    frag.appendChild(node);
+  }
+
+  slot.appendChild(frag);
 }
