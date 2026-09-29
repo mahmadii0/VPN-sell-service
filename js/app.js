@@ -19,6 +19,8 @@ import { renderSupport } from './pages/support.js';
 import { renderGuide } from './pages/guide.js';
 import { renderNotifications } from './pages/notifications.js';
 import { ready as telegramReady, isAvailable as telegramAvailable } from './services/telegram.js';
+import * as network from './services/network.js';
+import { toast } from './components/ui.js';
 
 const SPLASH_MIN_MS = 600;
 const SPLASH_FADE_MS = 320;
@@ -34,8 +36,10 @@ function installErrorBoundary() {
   window.addEventListener('error', (e) => {
     console.error('[PULSE] Uncaught:', e.error ?? e.message);
   });
+
   window.addEventListener('unhandledrejection', (e) => {
     console.error('[PULSE] Unhandled rejection:', e.reason);
+    toast('مشکلی در پردازش درخواست پیش آمد', { variant: 'error' });
   });
 }
 
@@ -75,6 +79,7 @@ function main() {
   const startedAt = performance.now();
 
   installErrorBoundary();
+  network.init();
 
   if (telegramAvailable()) telegramReady();
   else if (isDev()) console.info('[Telegram] SDK not detected — browser mode.');
