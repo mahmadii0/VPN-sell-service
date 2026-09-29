@@ -708,3 +708,268 @@
   font-weight: 700;
   color: var(--c-accent);
 }
+
+/* ---------- Wallet hero ---------- */
+.pulse-wallet-hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-6) var(--sp-5);
+  background: var(--grad-primary);
+  border-radius: var(--r-xl);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.35);
+  color: #fff;
+}
+
+.pulse-wallet-hero__label {
+  font-size: var(--fs-small);
+  opacity: 0.85;
+}
+
+.pulse-wallet-hero__balance {
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: var(--sp-2);
+}
+
+.pulse-wallet-hero .pulse-btn--accent {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(6px);
+}
+
+.pulse-wallet-hero .pulse-btn--accent:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+/* ---------- Wallet transaction item ---------- */
+.pulse-tx-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+}
+
+.pulse-tx-item__icon {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--c-surface-2);
+  color: var(--c-text-muted);
+  flex-shrink: 0;
+}
+
+.pulse-tx-item__body { flex: 1; min-width: 0; }
+.pulse-tx-item__title { font-size: 14px; font-weight: 500; }
+.pulse-tx-item__date { font-size: var(--fs-small); color: var(--c-text-muted); margin-top: 2px; }
+
+.pulse-tx-item__amount {
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.pulse-tx-item__amount.is-positive { color: var(--c-success); }
+.pulse-tx-item__amount.is-negative { color: var(--c-error); }
+
+/* ---------- Account profile ---------- */
+.pulse-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-6) var(--sp-4);
+  text-align: center;
+}
+
+.pulse-profile__avatar {
+  width: 72px;
+  height: 72px;
+  font-size: 26px;
+}
+
+.pulse-profile__name {
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: var(--sp-2);
+}
+
+.pulse-profile__username {
+  font-size: var(--fs-caption);
+  color: var(--c-text-muted);
+}
+
+/* ---------- Menu list ---------- */
+.pulse-menu-list {
+  display: flex;
+  flex-direction: column;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.pulse-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  text-align: right;
+  color: var(--c-text);
+  font-size: 14px;
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--dur-base) var(--ease-out);
+}
+
+.pulse-menu-item + .pulse-menu-item {
+  border-top: 1px solid var(--c-border);
+}
+
+.pulse-menu-item:hover { background: var(--c-surface-2); }
+
+.pulse-menu-item__icon {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm);
+  background: var(--c-primary-soft);
+  color: var(--c-primary);
+  flex-shrink: 0;
+}
+
+.pulse-menu-item__label { flex: 1; min-width: 0; }
+
+.pulse-menu-item__chevron {
+  flex-shrink: 0;
+  color: var(--c-text-dim);
+  display: inline-flex;
+}
+
+/* ---------- FAQ ---------- */
+.pulse-faq-item {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.pulse-faq-item + .pulse-faq-item { margin-top: var(--sp-2); }
+
+.pulse-faq-item__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  cursor: pointer;
+  list-style: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pulse-faq-item__summary::-webkit-details-marker { display: none; }
+
+.pulse-faq-item__question { flex: 1; min-width: 0; }
+
+.pulse-faq-item__chevron {
+  flex-shrink: 0;
+  color: var(--c-text-muted);
+  display: inline-flex;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.pulse-faq-item[open] .pulse-faq-item__chevron {
+  transform: rotate(180deg);
+}
+
+.pulse-faq-item__answer {
+  padding: 0 var(--sp-4) var(--sp-4);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  color: var(--c-text-muted);
+}
+
+/* ---------- Guide steps ---------- */
+.pulse-guide-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.pulse-guide-step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+}
+
+.pulse-guide-step__num {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--grad-primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.pulse-guide-step__body { flex: 1; min-width: 0; }
+.pulse-guide-step__title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.pulse-guide-step__text {
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
+  color: var(--c-text-muted);
+}
+
+/* ---------- Notifications ---------- */
+.pulse-notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+}
+
+.pulse-notif-item__icon {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--c-primary-soft);
+  color: var(--c-primary);
+  flex-shrink: 0;
+}
+
+.pulse-notif-item__body { flex: 1; min-width: 0; }
+.pulse-notif-item__title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.pulse-notif-item__text {
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
+  color: var(--c-text-muted);
+  margin-bottom: 4px;
+}
+.pulse-notif-item__date { font-size: var(--fs-micro); color: var(--c-text-dim); }

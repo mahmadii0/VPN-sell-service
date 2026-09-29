@@ -66,22 +66,11 @@
     <nav id="bottom-nav" role="navigation" aria-label="ناوبری اصلی"></nav>
   </main>
 
-  <!-- ============================================================
-       TEMPLATES
-       ============================================================ -->
-
   <!-- ========== HOME ========== -->
   <template id="tpl-home">
     <div class="pulse-page">
       <header class="pulse-home-header">
-        <img
-          src="assets/images/pulse-logo.jpg"
-          alt="PULSE VPN"
-          width="40"
-          height="40"
-          decoding="async"
-          class="pulse-home-header__logo"
-        />
+        <img src="assets/images/pulse-logo.jpg" alt="PULSE VPN" width="40" height="40" decoding="async" class="pulse-home-header__logo" />
         <div class="pulse-home-header__info">
           <div class="pulse-home-header__name">PULSE VPN</div>
           <div class="pulse-home-header__tagline">اتصال امن، آزادی بیشتر</div>
@@ -129,18 +118,13 @@
     <div class="pulse-card">
       <div class="pulse-home-sub__header">
         <div class="pulse-home-sub__title">اشتراک فعال</div>
-        <span class="pulse-chip pulse-chip--active">
-          <span class="pulse-chip__dot"></span>
-          <span>فعال</span>
-        </span>
+        <span class="pulse-chip pulse-chip--active"><span class="pulse-chip__dot"></span><span>فعال</span></span>
       </div>
       <div class="pulse-home-sub__row">
         <span class="pulse-home-sub__label">مصرف</span>
         <span class="pulse-home-sub__value pulse-num" data-bind="usage">0 از 0 گیگابایت</span>
       </div>
-      <div class="pulse-progress">
-        <div class="pulse-progress__fill" data-bind="usageBar"></div>
-      </div>
+      <div class="pulse-progress"><div class="pulse-progress__fill" data-bind="usageBar"></div></div>
       <div class="pulse-home-sub__row pulse-home-sub__row--spaced">
         <span class="pulse-home-sub__label">زمان باقی‌مانده</span>
         <span class="pulse-home-sub__value pulse-num" data-bind="daysLeft">0 روز</span>
@@ -162,7 +146,7 @@
     </button>
   </template>
 
-  <!-- ========== DURATION SELECTION ========== -->
+  <!-- ========== DURATION ========== -->
   <template id="tpl-duration">
     <div class="pulse-page">
       <header class="pulse-page-header">
@@ -170,9 +154,7 @@
         <h1 class="pulse-page-header__title">انتخاب مدت اشتراک</h1>
       </header>
       <div class="pulse-page-section">
-        <p class="pulse-duration-intro">
-          مدت اشتراک خود را انتخاب کنید. سپس نوع اتصال و حجم را انتخاب خواهید کرد.
-        </p>
+        <p class="pulse-duration-intro">مدت اشتراک خود را انتخاب کنید. سپس نوع اتصال و حجم را انتخاب خواهید کرد.</p>
       </div>
       <div class="pulse-page-row" data-slot="durations"></div>
       <div class="pulse-page-section pulse-mt-2">
@@ -200,9 +182,7 @@
         <h1 class="pulse-page-header__title">انتخاب نوع اتصال</h1>
       </header>
       <div class="pulse-page-section">
-        <p class="pulse-duration-intro">
-          نوع اتصال خود را انتخاب کنید. تانل پرسرعت‌تر و پایدارتر از عادی است.
-        </p>
+        <p class="pulse-duration-intro">نوع اتصال خود را انتخاب کنید. تانل پرسرعت‌تر و پایدارتر از عادی است.</p>
       </div>
       <div class="pulse-connection-list" data-slot="options"></div>
       <div class="pulse-page-section pulse-mt-2">
@@ -224,7 +204,7 @@
     </button>
   </template>
 
-  <!-- ========== PLANS LIST ========== -->
+  <!-- ========== PLANS ========== -->
   <template id="tpl-plans">
     <div class="pulse-page">
       <header class="pulse-page-header">
@@ -359,9 +339,7 @@
       </header>
 
       <div class="pulse-page-section">
-        <p class="pulse-duration-intro">
-          پس از واریز مبلغ به یکی از کارت‌های اعلام‌شده، تصویر رسید را ارسال کنید.
-        </p>
+        <p class="pulse-duration-intro">پس از واریز مبلغ به یکی از کارت‌های اعلام‌شده، تصویر رسید را ارسال کنید.</p>
       </div>
 
       <div class="pulse-page-section">
@@ -384,19 +362,11 @@
           </div>
           <div class="pulse-receipt__preview" data-slot="preview"></div>
         </div>
-        <input
-          type="file"
-          accept="image/jpeg,image/jpg,image/png,image/webp"
-          data-role="file-input"
-          class="pulse-file-input"
-          aria-hidden="true"
-        />
+        <input type="file" accept="image/jpeg,image/jpg,image/png,image/webp" data-role="file-input" class="pulse-file-input" aria-hidden="true" />
       </div>
 
       <div class="pulse-page-section pulse-mt-2">
-        <button type="button" class="pulse-btn pulse-btn--primary pulse-btn--lg pulse-btn--block" data-action="submit" disabled>
-          ارسال رسید برای بررسی
-        </button>
+        <button type="button" class="pulse-btn pulse-btn--primary pulse-btn--lg pulse-btn--block" data-action="submit" disabled>ارسال رسید برای بررسی</button>
       </div>
 
       <div class="pulse-page-section">
@@ -415,15 +385,12 @@
     <div class="pulse-page">
       <div class="pulse-page-section">
         <div class="pulse-result pulse-result--pending" data-slot="card">
-          <div class="pulse-result__icon" data-slot="icon">
-            <span data-icon="clock"></span>
-          </div>
+          <div class="pulse-result__icon" data-slot="icon"><span data-icon="clock"></span></div>
           <div class="pulse-result__title" data-bind="title"></div>
           <div class="pulse-result__text" data-bind="text"></div>
           <div class="pulse-result__detail" data-slot="detail"></div>
         </div>
       </div>
-
       <div class="pulse-page-section pulse-mt-2" data-slot="actions"></div>
     </div>
   </template>
@@ -435,7 +402,6 @@
         <button type="button" class="pulse-icon-btn" data-action="back" aria-label="بازگشت"></button>
         <h1 class="pulse-page-header__title">اشتراک من</h1>
       </header>
-
       <div data-slot="content"></div>
     </div>
   </template>
@@ -458,43 +424,32 @@
       <div class="pulse-card">
         <div class="pulse-home-sub__header">
           <div class="pulse-home-sub__title">اشتراک فعال</div>
-          <span class="pulse-chip pulse-chip--active">
-            <span class="pulse-chip__dot"></span>
-            <span>فعال</span>
-          </span>
+          <span class="pulse-chip pulse-chip--active"><span class="pulse-chip__dot"></span><span>فعال</span></span>
         </div>
 
         <div class="pulse-sub-detail-row">
           <span class="pulse-sub-detail-row__label">نوع اتصال</span>
           <span class="pulse-sub-detail-row__value" data-bind="connectionType"></span>
         </div>
-
         <div class="pulse-sub-detail-row">
           <span class="pulse-sub-detail-row__label">مدت</span>
           <span class="pulse-sub-detail-row__value" data-bind="duration"></span>
         </div>
-
         <div class="pulse-sub-detail-row" data-row="volumeRow">
           <span class="pulse-sub-detail-row__label">حجم کل</span>
           <span class="pulse-sub-detail-row__value pulse-num" data-bind="volume"></span>
         </div>
-
         <div class="pulse-sub-detail-row" data-row="usageRow">
           <span class="pulse-sub-detail-row__label">مصرف‌شده</span>
           <span class="pulse-sub-detail-row__value pulse-num" data-bind="usage"></span>
         </div>
-
         <div data-row="progressRow">
-          <div class="pulse-progress">
-            <div class="pulse-progress__fill" data-bind="usageBar"></div>
-          </div>
+          <div class="pulse-progress"><div class="pulse-progress__fill" data-bind="usageBar"></div></div>
         </div>
-
         <div class="pulse-sub-detail-row">
           <span class="pulse-sub-detail-row__label">تاریخ انقضا</span>
           <span class="pulse-sub-detail-row__value pulse-num" data-bind="expiresAt"></span>
         </div>
-
         <div class="pulse-sub-detail-row">
           <span class="pulse-sub-detail-row__label">زمان باقی‌مانده</span>
           <span class="pulse-sub-detail-row__value pulse-num" data-bind="daysLeft"></span>
@@ -527,7 +482,6 @@
         <button type="button" class="pulse-icon-btn" data-action="back" aria-label="بازگشت"></button>
         <h1 class="pulse-page-header__title">خریدهای من</h1>
       </header>
-
       <div data-slot="content"></div>
     </div>
   </template>
@@ -555,17 +509,254 @@
         <div class="pulse-order-card__id pulse-num" data-bind="orderId"></div>
         <span class="pulse-chip" data-bind="statusChip"></span>
       </div>
-
       <div class="pulse-order-card__body">
         <div class="pulse-order-card__volume" data-bind="volume"></div>
         <div class="pulse-order-card__meta" data-bind="meta"></div>
       </div>
-
       <div class="pulse-order-card__bottom">
         <div class="pulse-order-card__date" data-bind="date"></div>
         <div class="pulse-order-card__price pulse-num" data-bind="price"></div>
       </div>
     </button>
+  </template>
+
+  <!-- ========== WALLET ========== -->
+  <template id="tpl-wallet">
+    <div class="pulse-page">
+      <header class="pulse-page-header">
+        <button type="button" class="pulse-icon-btn" data-action="back" aria-label="بازگشت"></button>
+        <h1 class="pulse-page-header__title">کیف پول</h1>
+      </header>
+
+      <div class="pulse-page-section">
+        <div class="pulse-wallet-hero">
+          <div class="pulse-wallet-hero__label">موجودی فعلی</div>
+          <div class="pulse-wallet-hero__balance pulse-num" data-bind="balance">0 تومان</div>
+          <button type="button" class="pulse-btn pulse-btn--accent pulse-btn--block" data-action="charge">
+            <span data-icon="plus" class="shrink-0"></span>
+            <span>افزایش موجودی</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="pulse-page-section">
+        <div class="pulse-section-label">تاریخچه تراکنش‌ها</div>
+      </div>
+
+      <div data-slot="content"></div>
+    </div>
+  </template>
+
+  <template id="tpl-wallet-empty">
+    <div class="pulse-page-section">
+      <div class="pulse-card">
+        <div class="pulse-empty">
+          <div class="pulse-empty__icon" data-icon="creditCard"></div>
+          <div class="pulse-empty__title">هنوز تراکنشی نداری</div>
+          <div class="pulse-empty__text">پس از اولین شارژ یا خرید، تراکنش‌های شما اینجا نمایش داده می‌شود.</div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-wallet-tx-list">
+    <div class="pulse-page-row" data-slot="transactions"></div>
+  </template>
+
+  <template id="tpl-wallet-tx-item">
+    <div class="pulse-tx-item">
+      <div class="pulse-tx-item__icon" data-icon></div>
+      <div class="pulse-tx-item__body">
+        <div class="pulse-tx-item__title" data-bind="title"></div>
+        <div class="pulse-tx-item__date" data-bind="date"></div>
+      </div>
+      <div class="pulse-tx-item__amount pulse-num" data-bind="amount"></div>
+    </div>
+  </template>
+
+  <!-- ========== ACCOUNT ========== -->
+  <template id="tpl-account">
+    <div class="pulse-page">
+      <header class="pulse-page-header">
+        <button type="button" class="pulse-icon-btn" data-action="back" aria-label="بازگشت"></button>
+        <h1 class="pulse-page-header__title">حساب کاربری</h1>
+      </header>
+
+      <div class="pulse-page-section">
+        <div class="pulse-profile">
+          <div class="pulse-profile__avatar pulse-avatar pulse-avatar--lg" data-bind="avatarInitial">پ</div>
+          <div class="pulse-profile__name" data-bind="displayName">کاربر PULSE</div>
+          <div class="pulse-profile__username pulse-num" data-bind="username"></div>
+        </div>
+      </div>
+
+      <div class="pulse-page-section">
+        <div class="pulse-card">
+          <div class="pulse-sub-detail-row">
+            <span class="pulse-sub-detail-row__label">موجودی کیف پول</span>
+            <span class="pulse-sub-detail-row__value pulse-num" data-bind="balance"></span>
+          </div>
+          <div class="pulse-sub-detail-row">
+            <span class="pulse-sub-detail-row__label">اشتراک فعلی</span>
+            <span class="pulse-sub-detail-row__value" data-bind="subscriptionLabel"></span>
+          </div>
+          <div class="pulse-sub-detail-row">
+            <span class="pulse-sub-detail-row__label">تعداد خریدها</span>
+            <span class="pulse-sub-detail-row__value pulse-num" data-bind="ordersCount"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pulse-page-section">
+        <div class="pulse-menu-list">
+          <button type="button" class="pulse-menu-item" data-action="subscription">
+            <span class="pulse-menu-item__icon" data-icon="shield"></span>
+            <span class="pulse-menu-item__label">اشتراک من</span>
+            <span class="pulse-menu-item__chevron" data-icon="chevronLeft"></span>
+          </button>
+          <button type="button" class="pulse-menu-item" data-action="purchases">
+            <span class="pulse-menu-item__icon" data-icon="package"></span>
+            <span class="pulse-menu-item__label">خریدهای من</span>
+            <span class="pulse-menu-item__chevron" data-icon="chevronLeft"></span>
+          </button>
+          <button type="button" class="pulse-menu-item" data-action="wallet">
+            <span class="pulse-menu-item__icon" data-icon="wallet"></span>
+            <span class="pulse-menu-item__label">کیف پول</span>
+            <span class="pulse-menu-item__chevron" data-icon="chevronLeft"></span>
+          </button>
+          <button type="button" class="pulse-menu-item" data-action="guide">
+            <span class="pulse-menu-item__icon" data-icon="bookOpen"></span>
+            <span class="pulse-menu-item__label">راهنمای خرید</span>
+            <span class="pulse-menu-item__chevron" data-icon="chevronLeft"></span>
+          </button>
+          <button type="button" class="pulse-menu-item" data-action="support">
+            <span class="pulse-menu-item__icon" data-icon="lifeBuoy"></span>
+            <span class="pulse-menu-item__label">پشتیبانی</span>
+            <span class="pulse-menu-item__chevron" data-icon="chevronLeft"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- ========== SUPPORT ========== -->
+  <template id="tpl-support">
+    <div class="pulse-page">
+      <header class="pulse-page-header">
+        <button type="button" class="pulse-icon-btn" data-action="back" aria-label="بازگشت"></button>
+        <h1 class="pulse-page-header__title">پشتیبانی</h1>
+      </header>
+
+      <div class="pulse-page-section">
+        <p class="pulse-duration-intro">در صورت بروز هر مشکلی، از طریق راه‌های زیر با تیم پشتیبانی در ارتباط باشید.</p>
+      </div>
+
+      <div class="pulse-page-section">
+        <div class="pulse-menu-list">
+          <button type="button" class="pulse-menu-item" data-action="contact">
+            <span class="pulse-menu-item__icon" data-icon="lifeBuoy"></span>
+            <span class="pulse-menu-item__label">ارتباط با پشتیبانی</span>
+            <span class="pulse-menu-item__chevron" data-icon="chevronLeft"></span>
+          </button>
+          <button type="button" class="pulse-menu-item" data-action="payment-issue">
+            <span class="pulse-menu-item__icon" data-icon="creditCard"></span>
+            <span class="pulse-menu-item__label">مشکل در پرداخت</span>
+            <span class="pulse-menu-item__chevron" data-icon="chevronLeft"></span>
+          </button>
+          <button type="button" class="pulse-menu-item" data-action="config-issue">
+            <span class="pulse-menu-item__icon" data-icon="shield"></span>
+            <span class="pulse-menu-item__label">مشکل در دریافت کانفیگ</span>
+            <span class="pulse-menu-item__chevron" data-icon="chevronLeft"></span>
+          </button>
+          <button type="button" class="pulse-menu-item" data-action="connection-issue">
+            <span class="pulse-menu-item__icon" data-icon="zap"></span>
+            <span class="pulse-menu-item__label">مشکل در اتصال</span>
+            <span class="pulse-menu-item__chevron" data-icon="chevronLeft"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="pulse-page-section">
+        <div class="pulse-section-label">سوالات متداول</div>
+        <div data-slot="faq"></div>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-faq-item">
+    <details class="pulse-faq-item">
+      <summary class="pulse-faq-item__summary">
+        <span class="pulse-faq-item__question" data-bind="question"></span>
+        <span class="pulse-faq-item__chevron" data-icon="chevronDown"></span>
+      </summary>
+      <div class="pulse-faq-item__answer" data-bind="answer"></div>
+    </details>
+  </template>
+
+  <!-- ========== GUIDE ========== -->
+  <template id="tpl-guide">
+    <div class="pulse-page">
+      <header class="pulse-page-header">
+        <button type="button" class="pulse-icon-btn" data-action="back" aria-label="بازگشت"></button>
+        <h1 class="pulse-page-header__title">راهنمای خرید</h1>
+      </header>
+
+      <div class="pulse-page-section">
+        <p class="pulse-duration-intro">در چند مرحله ساده، اشتراک خود را خریداری کنید.</p>
+      </div>
+
+      <div class="pulse-page-section">
+        <div class="pulse-guide-list" data-slot="steps"></div>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-guide-step">
+    <div class="pulse-guide-step">
+      <div class="pulse-guide-step__num" data-bind="num"></div>
+      <div class="pulse-guide-step__body">
+        <div class="pulse-guide-step__title" data-bind="title"></div>
+        <div class="pulse-guide-step__text" data-bind="text"></div>
+      </div>
+    </div>
+  </template>
+
+  <!-- ========== NOTIFICATIONS ========== -->
+  <template id="tpl-notifications">
+    <div class="pulse-page">
+      <header class="pulse-page-header">
+        <button type="button" class="pulse-icon-btn" data-action="back" aria-label="بازگشت"></button>
+        <h1 class="pulse-page-header__title">اعلان‌ها</h1>
+      </header>
+      <div data-slot="content"></div>
+    </div>
+  </template>
+
+  <template id="tpl-notifications-empty">
+    <div class="pulse-page-section">
+      <div class="pulse-card">
+        <div class="pulse-empty">
+          <div class="pulse-empty__icon" data-icon="bell"></div>
+          <div class="pulse-empty__title">اعلان جدیدی نداری</div>
+          <div class="pulse-empty__text">اعلان‌های مربوط به خریدها و اشتراک شما اینجا نمایش داده می‌شود.</div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-notifications-list">
+    <div class="pulse-page-row" data-slot="items"></div>
+  </template>
+
+  <template id="tpl-notification-item">
+    <div class="pulse-notif-item">
+      <div class="pulse-notif-item__icon" data-icon></div>
+      <div class="pulse-notif-item__body">
+        <div class="pulse-notif-item__title" data-bind="title"></div>
+        <div class="pulse-notif-item__text" data-bind="text"></div>
+        <div class="pulse-notif-item__date" data-bind="date"></div>
+      </div>
+    </div>
   </template>
 
   <!-- ========== PLACEHOLDER ========== -->

@@ -11,7 +11,11 @@ import { renderReceiptUpload } from './pages/receiptUpload.js';
 import { renderPaymentResult } from './pages/paymentResult.js';
 import { renderMySubscription } from './pages/mySubscription.js';
 import { renderMyPurchases } from './pages/myPurchases.js';
-import { renderPlaceholder } from './pages/placeholder.js';
+import { renderWallet } from './pages/wallet.js';
+import { renderAccount } from './pages/account.js';
+import { renderSupport } from './pages/support.js';
+import { renderGuide } from './pages/guide.js';
+import { renderNotifications } from './pages/notifications.js';
 import { ready as telegramReady, isAvailable as telegramAvailable } from './services/telegram.js';
 
 function logBootSignature() {
@@ -40,12 +44,11 @@ function registerScreens() {
   router.register(SCREENS.PAYMENT_RESULT, renderPaymentResult);
   router.register(SCREENS.MY_SUBSCRIPTION, renderMySubscription);
   router.register(SCREENS.MY_PURCHASES, renderMyPurchases);
-
-  router.register(SCREENS.WALLET, renderPlaceholder);
-  router.register(SCREENS.ACCOUNT, renderPlaceholder);
-  router.register(SCREENS.SUPPORT, renderPlaceholder);
-  router.register(SCREENS.GUIDE, renderPlaceholder);
-  router.register(SCREENS.NOTIFICATIONS, renderPlaceholder);
+  router.register(SCREENS.WALLET, renderWallet);
+  router.register(SCREENS.ACCOUNT, renderAccount);
+  router.register(SCREENS.SUPPORT, renderSupport);
+  router.register(SCREENS.GUIDE, renderGuide);
+  router.register(SCREENS.NOTIFICATIONS, renderNotifications);
 }
 
 function main() {
