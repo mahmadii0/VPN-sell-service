@@ -11,6 +11,9 @@ desktop.ini
 # Secrets
 .env
 .env.local
+shop.sqlite*
+receipts/
+bot/__pycache__/
 *.token
 *.pem
 

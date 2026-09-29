@@ -8,6 +8,7 @@ import { iconNode } from '../components/icons.js';
 import { toast } from '../components/ui.js';
 import { upload } from '../api/client.js';
 import { ENDPOINTS } from '../api/endpoints.js';
+import { refreshShop } from '../services/shop.js';
 import { acquireLock, releaseLock, hasValidImageSignature } from '../utils/validate.js';
 
 const MAX_INPUT_SIZE = 5 * 1024 * 1024;
@@ -104,6 +105,7 @@ async function handleFileChange(root, input) {
 
   try {
     const compressed = await compressImage(file);
+    if (compressed.size > 4 * 1024 * 1024) throw new Error('receipt_too_large');
     const url = blobToPreviewUrl(compressed);
 
     previewSlot.innerHTML = '';
@@ -143,23 +145,23 @@ async function submitReceipt(root, plan) {
 
   try {
     const formData = new FormData();
-    formData.append('order_id', `ord_${Date.now()}`);
-    formData.append('amount', String(plan.price));
+    formData.append('package_id', plan.id);
     formData.append('receipt', blob, 'receipt.jpg');
 
-    const res = await upload(ENDPOINTS.PAYMENT_RECEIPT_UPLOAD.path, formData);
+    const res = await upload(ENDPOINTS.ORDER_CREATE.path, formData);
+    await refreshShop();
 
     setState({
       paymentState: 'WAITING_ADMIN_APPROVAL',
       paymentResult: {
-        paymentId: res.payment_id,
+        paymentId: res.id,
         status: res.status,
-        submittedAt: res.submitted_at,
+        submittedAt: new Date().toISOString(),
         amount: plan.price
       }
     });
 
-    navigate(SCREENS.PAYMENT_RESULT, { paymentId: res.payment_id });
+    navigate(SCREENS.PAYMENT_RESULT, { paymentId: res.id });
   } catch (err) {
     console.error('[receipt] upload failed:', err);
     toast(err?.message || 'ارسال رسید ناموفق بود', { variant: 'error' });

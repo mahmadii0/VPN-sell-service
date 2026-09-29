@@ -5,6 +5,8 @@ const initialState = {
   screenParams: null,
 
   currentUser: null,
+  shopPackages: [],
+  cardNumber: '',
   walletBalance: 0,
   walletTransactions: [],
   notifications: [],

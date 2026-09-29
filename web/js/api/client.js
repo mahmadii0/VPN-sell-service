@@ -97,7 +97,7 @@ export async function request(path, {
     const data = await parseBody(response);
 
     if (!response.ok) {
-      throw new ApiError('http', data?.message || `HTTP ${response.status}`, {
+      throw new ApiError('http', data?.error || data?.message || `HTTP ${response.status}`, {
         status: response.status,
         url,
         payload: data
@@ -152,7 +152,7 @@ export async function upload(path, formData, { timeout = 30000 } = {}) {
   const data = await parseBody(response);
 
   if (!response.ok) {
-    throw new ApiError('http', data?.message || `HTTP ${response.status}`, {
+    throw new ApiError('http', data?.error || data?.message || `HTTP ${response.status}`, {
       status: response.status,
       payload: data
     });

@@ -1,4 +1,4 @@
-import { SCREENS, CARD_ACCOUNTS, PAYMENT_METHOD, LOCK_KEYS } from '../core/constants.js';
+import { SCREENS, PAYMENT_METHOD, LOCK_KEYS } from '../core/constants.js';
 import { getState, setState } from '../state/store.js';
 import { navigate, back } from '../core/router.js';
 import { useTemplate } from '../core/template.js';
@@ -53,7 +53,7 @@ function fillSummary(root, plan) {
 function fillPriceBox(root, plan) {
   const balance = getState().walletBalance ?? 0;
   const total = plan.price;
-  const canPayWithWallet = balance >= total;
+  const canPayWithWallet = false;
 
   setText(root, 'total', formatPrice(total));
   setText(root, 'balance', formatPrice(balance));
@@ -81,7 +81,9 @@ function renderCards(root) {
 
   const frag = document.createDocumentFragment();
 
-  for (const card of CARD_ACCOUNTS) {
+  const cardNumber = getState().cardNumber;
+  if (!cardNumber) return;
+  for (const card of [{ id: 1, holder: '', number: cardNumber, numberRaw: cardNumber.replace(/\D/g, '') }]) {
     const tpl = useTemplate('tpl-card-account');
     const node = tpl.firstElementChild;
 
@@ -121,8 +123,7 @@ function bindActions(root, plan) {
     const methodBtn = e.target.closest('[data-method]');
     if (methodBtn) {
       const method = methodBtn.dataset.method;
-      const walletAvailable = root.dataset.walletAvailable === '1';
-      if (method === PAYMENT_METHOD.WALLET && !walletAvailable) {
+      if (method === PAYMENT_METHOD.WALLET) {
         haptic.warn();
         toast('موجودی کیف پول کافی نیست', { variant: 'warning' });
         return;
@@ -169,7 +170,7 @@ function handlePay(root, plan) {
   const method = getState().paymentMethod ?? PAYMENT_METHOD.CARD_TO_CARD;
 
   if (method === PAYMENT_METHOD.WALLET) {
-    toast('اتصال به درگاه کیف پول به‌زودی فعال می‌شود', { variant: 'info' });
+    toast('پرداخت از کیف پول در دسترس نیست', { variant: 'info' });
     releaseLock(LOCK_KEYS.PAYMENT);
     return;
   }
