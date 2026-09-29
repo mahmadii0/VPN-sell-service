@@ -7,6 +7,8 @@ import { renderDuration } from './pages/duration.js';
 import { renderConnectionType } from './pages/connectionType.js';
 import { renderPlans } from './pages/plans.js';
 import { renderCheckout } from './pages/checkout.js';
+import { renderReceiptUpload } from './pages/receiptUpload.js';
+import { renderPaymentResult } from './pages/paymentResult.js';
 import { renderPlaceholder } from './pages/placeholder.js';
 import { ready as telegramReady, isAvailable as telegramAvailable } from './services/telegram.js';
 
@@ -32,8 +34,9 @@ function registerScreens() {
   router.register(SCREENS.CONNECTION_TYPE, renderConnectionType);
   router.register(SCREENS.PLANS, renderPlans);
   router.register(SCREENS.CHECKOUT, renderCheckout);
+  router.register(SCREENS.RECEIPT_UPLOAD, renderReceiptUpload);
+  router.register(SCREENS.PAYMENT_RESULT, renderPaymentResult);
 
-  router.register(SCREENS.PAYMENT_RESULT, renderPlaceholder);
   router.register(SCREENS.MY_SUBSCRIPTION, renderPlaceholder);
   router.register(SCREENS.MY_PURCHASES, renderPlaceholder);
   router.register(SCREENS.WALLET, renderPlaceholder);

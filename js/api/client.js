@@ -5,7 +5,7 @@ export class ApiError extends Error {
   constructor(type, message, meta = {}) {
     super(message);
     this.name = 'ApiError';
-    this.type = type; // 'network' | 'timeout' | 'http' | 'parse'
+    this.type = type;
     Object.assign(this, meta);
   }
 }
@@ -37,15 +37,12 @@ async function parseBody(response) {
     try {
       return await response.json();
     } catch {
-      throw new ApiError('parse', 'Invalid JSON response', {
-        status: response.status
-      });
+      throw new ApiError('parse', 'Invalid JSON response', { status: response.status });
     }
   }
   return response.text();
 }
 
-// GET is idempotent — safe to retry on network failure.
 function isRetryable(method, type) {
   return method === 'GET' && (type === 'network' || type === 'timeout');
 }
@@ -127,8 +124,45 @@ export async function request(path, {
   throw lastError;
 }
 
-export const get    = (path, opts = {})        => request(path, { ...opts, method: 'GET' });
-export const post   = (path, body, opts = {})  => request(path, { ...opts, method: 'POST', body });
-export const put    = (path, body, opts = {})  => request(path, { ...opts, method: 'PUT', body });
-export const patch  = (path, body, opts = {})  => request(path, { ...opts, method: 'PATCH', body });
-export const del    = (path, opts = {})        => request(path, { ...opts, method: 'DELETE' });
+export async function upload(path, formData, { timeout = 30000 } = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+
+  const headers = buildHeaders();
+  // Do NOT set Content-Type — the browser adds the multipart boundary.
+
+  let response;
+  try {
+    response = await fetch(buildUrl(path), {
+      method: 'POST',
+      headers,
+      body: formData,
+      signal: controller.signal
+    });
+  } catch (err) {
+    clearTimeout(timer);
+    if (err.name === 'AbortError') {
+      throw new ApiError('timeout', 'Upload timed out');
+    }
+    throw new ApiError('network', 'Upload failed', { cause: err });
+  } finally {
+    clearTimeout(timer);
+  }
+
+  const data = await parseBody(response);
+
+  if (!response.ok) {
+    throw new ApiError('http', data?.message || `HTTP ${response.status}`, {
+      status: response.status,
+      payload: data
+    });
+  }
+
+  return data;
+}
+
+export const get   = (path, opts = {})       => request(path, { ...opts, method: 'GET' });
+export const post  = (path, body, opts = {}) => request(path, { ...opts, method: 'POST', body });
+export const put   = (path, body, opts = {}) => request(path, { ...opts, method: 'PUT', body });
+export const patch = (path, body, opts = {}) => request(path, { ...opts, method: 'PATCH', body });
+export const del   = (path, opts = {})       => request(path, { ...opts, method: 'DELETE' });

@@ -35,7 +35,6 @@ export function on(target, event, handler, options) {
   return () => target.removeEventListener(event, handler, options);
 }
 
-// Delegated listener — returns a cleanup function.
 export function onDelegate(root, selector, event, handler) {
   const listener = (e) => {
     const match = e.target.closest(selector);
@@ -48,4 +47,30 @@ export function onDelegate(root, selector, event, handler) {
 export function toggleClass(node, className, force) {
   if (!node) return;
   node.classList.toggle(className, force);
+}
+
+export async function copyToClipboard(text) {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    // fall through
+  }
+
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'absolute';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    ta.remove();
+    return ok;
+  } catch {
+    return false;
+  }
 }

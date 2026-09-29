@@ -1,3 +1,4 @@
+/* Page-level styles — چیزهایی که Tailwind پوشش نمی‌دهد */
 
 .pulse-page {
   display: flex;
@@ -218,144 +219,6 @@
   justify-content: center;
 }
 
-/* ---------- Custom Plan: Rate chips ---------- */
-.pulse-rate-chips {
-  display: flex;
-  gap: var(--sp-2);
-  overflow-x: auto;
-  padding-bottom: 2px;
-  scrollbar-width: none;
-}
-
-.pulse-rate-chips::-webkit-scrollbar { display: none; }
-
-.pulse-rate-chip {
-  flex: 1 0 auto;
-  padding: var(--sp-2) var(--sp-3);
-  border-radius: var(--r-md);
-  background: var(--c-surface-2);
-  border: 1px solid var(--c-border);
-  color: var(--c-text-muted);
-  font-size: var(--fs-small);
-  font-weight: 500;
-  white-space: nowrap;
-  transition:
-    background-color var(--dur-base) var(--ease-out),
-    border-color var(--dur-base) var(--ease-out),
-    color var(--dur-base) var(--ease-out);
-}
-
-.pulse-rate-chip.is-active {
-  background: var(--c-primary-soft);
-  border-color: var(--c-primary);
-  color: var(--c-primary);
-  font-weight: 600;
-}
-
-/* ---------- Suggested Plans: Custom CTA ---------- */
-.pulse-custom-cta {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  width: 100%;
-  padding: var(--sp-4);
-  border-radius: var(--r-lg);
-  background: var(--c-surface);
-  border: 1.5px dashed var(--c-border-strong);
-  color: var(--c-text);
-  text-align: right;
-  transition: border-color var(--dur-base) var(--ease-out);
-}
-
-.pulse-custom-cta:hover {
-  border-color: var(--c-primary);
-}
-
-.pulse-custom-cta__icon {
-  width: 40px;
-  height: 40px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--r-sm);
-  background: var(--c-secondary-soft);
-  color: var(--c-secondary);
-  flex-shrink: 0;
-}
-
-.pulse-custom-cta__body { flex: 1; min-width: 0; }
-.pulse-custom-cta__title { font-size: 15px; font-weight: 600; }
-.pulse-custom-cta__text {
-  font-size: var(--fs-small);
-  color: var(--c-text-muted);
-  margin-top: 2px;
-}
-
-.pulse-custom-cta__chevron {
-  flex-shrink: 0;
-  color: var(--c-text-dim);
-  display: inline-flex;
-}
-
-/* ---------- Checkout: Summary rows ---------- */
-.pulse-checkout-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--sp-2) 0;
-  font-size: var(--fs-caption);
-}
-
-.pulse-checkout-row:not(:last-child) {
-  border-bottom: 1px solid var(--c-border);
-}
-
-.pulse-checkout-row__label { color: var(--c-text-muted); }
-.pulse-checkout-row__value { font-weight: 600; }
-
-/* ---------- Checkout: Payment method ---------- */
-.pulse-payment-method {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  padding: var(--sp-4);
-  background: var(--c-surface);
-  border: 1.5px solid var(--c-primary);
-  border-radius: var(--r-lg);
-}
-
-.pulse-payment-method__icon {
-  width: 40px;
-  height: 40px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--r-sm);
-  background: var(--c-primary-soft);
-  color: var(--c-primary);
-  flex-shrink: 0;
-}
-
-.pulse-payment-method__body { flex: 1; min-width: 0; }
-.pulse-payment-method__title { font-size: 14px; font-weight: 600; }
-.pulse-payment-method__text { font-size: var(--fs-small); color: var(--c-text-muted); margin-top: 2px; }
-
-.pulse-payment-method__check {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid var(--c-primary);
-  position: relative;
-  flex-shrink: 0;
-}
-
-.pulse-payment-method__dot {
-  position: absolute;
-  inset: 3px;
-  background: var(--c-primary);
-  border-radius: 50%;
-}
-
 /* ---------- Connection type cards ---------- */
 .pulse-connection-list {
   display: flex;
@@ -456,3 +319,279 @@
   line-height: var(--lh-small);
   color: var(--c-text-muted);
 }
+
+/* ---------- Checkout summary rows ---------- */
+.pulse-checkout-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sp-2) 0;
+  font-size: var(--fs-caption);
+}
+
+.pulse-checkout-row:not(:last-child) {
+  border-bottom: 1px solid var(--c-border);
+}
+
+.pulse-checkout-row__label { color: var(--c-text-muted); }
+.pulse-checkout-row__value { font-weight: 600; }
+
+/* ---------- Checkout: payment methods ---------- */
+.pulse-method-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.pulse-method {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: var(--sp-4);
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-lg);
+  text-align: right;
+  transition:
+    border-color var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out);
+}
+
+.pulse-method:hover:not(.is-disabled) {
+  border-color: var(--c-border-strong);
+  background: var(--c-surface-2);
+}
+
+.pulse-method.is-active {
+  border-color: var(--c-primary);
+  background: var(--c-primary-soft);
+}
+
+.pulse-method.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pulse-method__icon {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm);
+  background: var(--c-primary-soft);
+  color: var(--c-primary);
+  flex-shrink: 0;
+}
+
+.pulse-method__body { flex: 1; min-width: 0; }
+.pulse-method__title { font-size: 14px; font-weight: 600; }
+.pulse-method__text { font-size: var(--fs-small); color: var(--c-text-muted); margin-top: 2px; }
+
+.pulse-method__radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--c-border-strong);
+  position: relative;
+  flex-shrink: 0;
+  transition: border-color var(--dur-base) var(--ease-out);
+}
+
+.pulse-method.is-active .pulse-method__radio {
+  border-color: var(--c-primary);
+}
+
+.pulse-method.is-active .pulse-method__radio::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--c-primary);
+}
+
+/* ---------- Checkout: card accounts ---------- */
+.pulse-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.pulse-card-account {
+  padding: var(--sp-4);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.pulse-card-account__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pulse-card-account__holder {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pulse-card-account__badge {
+  font-size: var(--fs-micro);
+  color: var(--c-accent);
+  background: var(--c-accent-soft);
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+}
+
+.pulse-card-account__number {
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--c-text);
+  direction: ltr;
+  text-align: center;
+  padding: var(--sp-3);
+  background: var(--c-surface-2);
+  border-radius: var(--r-md);
+}
+
+.pulse-card-account__copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 40px;
+  padding: 0 var(--sp-4);
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  color: var(--c-text);
+  font-size: 13px;
+  font-weight: 500;
+  transition:
+    border-color var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out);
+}
+
+.pulse-card-account__copy:hover {
+  border-color: var(--c-primary);
+  background: var(--c-primary-soft);
+  color: var(--c-primary);
+}
+
+/* ---------- Receipt upload ---------- */
+.pulse-file-input { display: none; }
+
+.pulse-receipt {
+  position: relative;
+  border: 1.5px dashed var(--c-border-strong);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--c-surface);
+  min-height: 200px;
+}
+
+.pulse-receipt__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  padding: var(--sp-8) var(--sp-4);
+  text-align: center;
+}
+
+.pulse-receipt__icon {
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--c-primary-soft);
+  color: var(--c-primary);
+}
+
+.pulse-receipt__title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.pulse-receipt__hint {
+  font-size: var(--fs-small);
+  color: var(--c-text-muted);
+  margin-bottom: var(--sp-2);
+}
+
+.pulse-receipt__preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-3);
+}
+
+.pulse-receipt__image {
+  max-width: 100%;
+  max-height: 340px;
+  border-radius: var(--r-md);
+  object-fit: contain;
+}
+
+.pulse-receipt__loading {
+  padding: var(--sp-8);
+  color: var(--c-text-muted);
+  font-size: var(--fs-caption);
+}
+
+/* ---------- Payment Result ---------- */
+.pulse-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--sp-3);
+  padding: var(--sp-8) var(--sp-5);
+  border-radius: var(--r-xl);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+}
+
+.pulse-result__icon {
+  width: 80px;
+  height: 80px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-bottom: var(--sp-2);
+}
+
+.pulse-result__title {
+  font-size: var(--fs-h2);
+  font-weight: 700;
+}
+
+.pulse-result__text {
+  font-size: var(--fs-caption);
+  color: var(--c-text-muted);
+  max-width: 300px;
+  line-height: var(--lh-caption);
+}
+
+.pulse-result__amount {
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  margin-top: var(--sp-3);
+  color: var(--c-accent);
+}
+
+.pulse-result--pending .pulse-result__icon { background: var(--c-info-soft); color: var(--c-info); }
+.pulse-result--success .pulse-result__icon { background: var(--c-success-soft); color: var(--c-success); }
+.pulse-result--error   .pulse-result__icon { background: var(--c-error-soft);   color: var(--c-error); }
+.pulse-result--warning .pulse-result__icon { background: var(--c-warning-soft); color: var(--c-warning); }
+.pulse-result--neutral .pulse-result__icon { background: rgba(148, 163, 184, 0.14); color: var(--c-text-muted); }

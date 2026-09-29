@@ -4,6 +4,7 @@ export const SCREENS = Object.freeze({
   CONNECTION_TYPE:  'connection-type',
   PLANS:            'plans',
   CHECKOUT:         'checkout',
+  RECEIPT_UPLOAD:   'receipt-upload',
   PAYMENT_RESULT:   'payment-result',
   MY_SUBSCRIPTION:  'my-subscription',
   MY_PURCHASES:     'my-purchases',
@@ -60,9 +61,9 @@ export const TX_STATUS = Object.freeze({
 });
 
 export const LOCK_KEYS = Object.freeze({
-  PAYMENT:       'payment',
-  ORDER_CREATE:  'order-create',
-  WALLET_CHARGE: 'wallet-charge',
+  PAYMENT:        'payment',
+  ORDER_CREATE:   'order-create',
+  WALLET_CHARGE:  'wallet-charge',
   RECEIPT_UPLOAD: 'receipt-upload'
 });
 
@@ -73,7 +74,6 @@ export const TOAST_VARIANT = Object.freeze({
   INFO:    'info'
 });
 
-// Card accounts — used in the upcoming card-to-card payment commit.
 export const CARD_ACCOUNTS = Object.freeze([
   Object.freeze({
     id: 1,
