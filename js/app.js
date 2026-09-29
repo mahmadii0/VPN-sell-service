@@ -14,10 +14,14 @@ import { renderMyPurchases } from './pages/myPurchases.js';
 import { renderOrderDetail } from './pages/orderDetail.js';
 import { renderWallet } from './pages/wallet.js';
 import { renderAccount } from './pages/account.js';
+import { renderSettings } from './pages/settings.js';
 import { renderSupport } from './pages/support.js';
 import { renderGuide } from './pages/guide.js';
 import { renderNotifications } from './pages/notifications.js';
 import { ready as telegramReady, isAvailable as telegramAvailable } from './services/telegram.js';
+
+const SPLASH_MIN_MS = 600;
+const SPLASH_FADE_MS = 320;
 
 function logBootSignature() {
   console.log(
@@ -48,12 +52,28 @@ function registerScreens() {
   router.register(SCREENS.ORDER_DETAIL, renderOrderDetail);
   router.register(SCREENS.WALLET, renderWallet);
   router.register(SCREENS.ACCOUNT, renderAccount);
+  router.register(SCREENS.SETTINGS, renderSettings);
   router.register(SCREENS.SUPPORT, renderSupport);
   router.register(SCREENS.GUIDE, renderGuide);
   router.register(SCREENS.NOTIFICATIONS, renderNotifications);
 }
 
+function hideSplash(startedAt) {
+  const splash = document.getElementById('splash');
+  if (!splash) return;
+
+  const elapsed = performance.now() - startedAt;
+  const wait = Math.max(0, SPLASH_MIN_MS - elapsed);
+
+  setTimeout(() => {
+    splash.classList.add('is-hidden');
+    setTimeout(() => splash.remove(), SPLASH_FADE_MS);
+  }, wait);
+}
+
 function main() {
+  const startedAt = performance.now();
+
   installErrorBoundary();
 
   if (telegramAvailable()) telegramReady();
@@ -72,6 +92,7 @@ function main() {
   router.init(screenRoot);
 
   logBootSignature();
+  hideSplash(startedAt);
 }
 
 if (document.readyState === 'loading') {

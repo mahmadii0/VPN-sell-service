@@ -203,7 +203,7 @@
   margin-bottom: var(--sp-3);
 }
 
-/* ---------- Duration intro text ---------- */
+/* ---------- Duration intro ---------- */
 .pulse-duration-intro {
   font-size: var(--fs-caption);
   line-height: var(--lh-caption);
@@ -271,13 +271,8 @@
   transition: border-color var(--dur-base) var(--ease-out);
 }
 
-.pulse-connection-card.is-selected .pulse-connection-card__radio {
-  border-color: var(--c-primary);
-}
-
-.pulse-connection-card--tunnel.is-selected .pulse-connection-card__radio {
-  border-color: var(--c-secondary);
-}
+.pulse-connection-card.is-selected .pulse-connection-card__radio { border-color: var(--c-primary); }
+.pulse-connection-card--tunnel.is-selected .pulse-connection-card__radio { border-color: var(--c-secondary); }
 
 .pulse-connection-card.is-selected .pulse-connection-card__radio::after {
   content: '';
@@ -300,10 +295,7 @@
   margin-bottom: var(--sp-1);
 }
 
-.pulse-connection-card__title {
-  font-size: 16px;
-  font-weight: 700;
-}
+.pulse-connection-card__title { font-size: 16px; font-weight: 700; }
 
 .pulse-connection-card__badge {
   font-size: var(--fs-micro);
@@ -329,10 +321,7 @@
   font-size: var(--fs-caption);
 }
 
-.pulse-checkout-row:not(:last-child) {
-  border-bottom: 1px solid var(--c-border);
-}
-
+.pulse-checkout-row:not(:last-child) { border-bottom: 1px solid var(--c-border); }
 .pulse-checkout-row__label { color: var(--c-text-muted); }
 .pulse-checkout-row__value { font-weight: 600; }
 
@@ -368,10 +357,7 @@
   background: var(--c-primary-soft);
 }
 
-.pulse-method.is-disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
+.pulse-method.is-disabled { opacity: 0.45; cursor: not-allowed; }
 
 .pulse-method__icon {
   width: 40px;
@@ -399,9 +385,7 @@
   transition: border-color var(--dur-base) var(--ease-out);
 }
 
-.pulse-method.is-active .pulse-method__radio {
-  border-color: var(--c-primary);
-}
+.pulse-method.is-active .pulse-method__radio { border-color: var(--c-primary); }
 
 .pulse-method.is-active .pulse-method__radio::after {
   content: '';
@@ -411,7 +395,7 @@
   background: var(--c-primary);
 }
 
-/* ---------- Checkout: card accounts ---------- */
+/* ---------- Card accounts ---------- */
 .pulse-cards-list {
   display: flex;
   flex-direction: column;
@@ -434,10 +418,7 @@
   align-items: center;
 }
 
-.pulse-card-account__holder {
-  font-size: 14px;
-  font-weight: 600;
-}
+.pulse-card-account__holder { font-size: 14px; font-weight: 600; }
 
 .pulse-card-account__badge {
   font-size: var(--fs-micro);
@@ -517,16 +498,8 @@
   color: var(--c-primary);
 }
 
-.pulse-receipt__title {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.pulse-receipt__hint {
-  font-size: var(--fs-small);
-  color: var(--c-text-muted);
-  margin-bottom: var(--sp-2);
-}
+.pulse-receipt__title { font-size: 15px; font-weight: 600; }
+.pulse-receipt__hint { font-size: var(--fs-small); color: var(--c-text-muted); margin-bottom: var(--sp-2); }
 
 .pulse-receipt__preview {
   display: flex;
@@ -571,11 +544,7 @@
   margin-bottom: var(--sp-2);
 }
 
-.pulse-result__title {
-  font-size: var(--fs-h2);
-  font-weight: 700;
-}
-
+.pulse-result__title { font-size: var(--fs-h2); font-weight: 700; }
 .pulse-result__text {
   font-size: var(--fs-caption);
   color: var(--c-text-muted);
@@ -596,7 +565,7 @@
 .pulse-result--warning .pulse-result__icon { background: var(--c-warning-soft); color: var(--c-warning); }
 .pulse-result--neutral .pulse-result__icon { background: rgba(148, 163, 184, 0.14); color: var(--c-text-muted); }
 
-/* ---------- My Subscription: detail rows ---------- */
+/* ---------- Subscription detail rows ---------- */
 .pulse-sub-detail-row {
   display: flex;
   justify-content: space-between;
@@ -605,14 +574,11 @@
   font-size: var(--fs-caption);
 }
 
-.pulse-sub-detail-row:not(:last-child) {
-  border-bottom: 1px solid var(--c-border);
-}
-
+.pulse-sub-detail-row:not(:last-child) { border-bottom: 1px solid var(--c-border); }
 .pulse-sub-detail-row__label { color: var(--c-text-muted); }
 .pulse-sub-detail-row__value { font-weight: 600; }
 
-/* ---------- My Subscription: config box ---------- */
+/* ---------- Config box ---------- */
 .pulse-config-box {
   display: flex;
   flex-direction: column;
@@ -634,14 +600,10 @@
   color: var(--c-text-muted);
 }
 
-.pulse-config-box__actions {
-  display: flex;
-  gap: var(--sp-2);
-}
-
+.pulse-config-box__actions { display: flex; gap: var(--sp-2); }
 .pulse-config-box__actions > * { flex: 1; }
 
-/* ---------- My Purchases: order card ---------- */
+/* ---------- Order card ---------- */
 .pulse-order-card {
   display: flex;
   flex-direction: column;
@@ -674,21 +636,9 @@
   font-weight: 600;
 }
 
-.pulse-order-card__body {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.pulse-order-card__volume {
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.pulse-order-card__meta {
-  font-size: var(--fs-small);
-  color: var(--c-text-muted);
-}
+.pulse-order-card__body { display: flex; flex-direction: column; gap: 2px; }
+.pulse-order-card__volume { font-size: 15px; font-weight: 700; }
+.pulse-order-card__meta { font-size: var(--fs-small); color: var(--c-text-muted); }
 
 .pulse-order-card__bottom {
   display: flex;
@@ -698,15 +648,22 @@
   border-top: 1px solid var(--c-border);
 }
 
-.pulse-order-card__date {
-  font-size: var(--fs-small);
-  color: var(--c-text-dim);
+.pulse-order-card__date { font-size: var(--fs-small); color: var(--c-text-dim); }
+.pulse-order-card__price { font-size: 15px; font-weight: 700; color: var(--c-accent); }
+
+/* ---------- Order detail header ---------- */
+.pulse-order-detail__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--sp-3);
 }
 
-.pulse-order-card__price {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--c-accent);
+.pulse-order-detail__id { font-size: 18px; font-weight: 700; }
+.pulse-order-detail__date {
+  font-size: var(--fs-small);
+  color: var(--c-text-muted);
+  margin-top: 4px;
 }
 
 /* ---------- Wallet hero ---------- */
@@ -721,16 +678,8 @@
   color: #fff;
 }
 
-.pulse-wallet-hero__label {
-  font-size: var(--fs-small);
-  opacity: 0.85;
-}
-
-.pulse-wallet-hero__balance {
-  font-size: 26px;
-  font-weight: 800;
-  margin-bottom: var(--sp-2);
-}
+.pulse-wallet-hero__label { font-size: var(--fs-small); opacity: 0.85; }
+.pulse-wallet-hero__balance { font-size: 26px; font-weight: 800; margin-bottom: var(--sp-2); }
 
 .pulse-wallet-hero .pulse-btn--accent {
   background: rgba(255, 255, 255, 0.18);
@@ -771,12 +720,7 @@
 .pulse-tx-item__title { font-size: 14px; font-weight: 500; }
 .pulse-tx-item__date { font-size: var(--fs-small); color: var(--c-text-muted); margin-top: 2px; }
 
-.pulse-tx-item__amount {
-  font-size: 14px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
+.pulse-tx-item__amount { font-size: 14px; font-weight: 700; flex-shrink: 0; }
 .pulse-tx-item__amount.is-positive { color: var(--c-success); }
 .pulse-tx-item__amount.is-negative { color: var(--c-error); }
 
@@ -790,22 +734,9 @@
   text-align: center;
 }
 
-.pulse-profile__avatar {
-  width: 72px;
-  height: 72px;
-  font-size: 26px;
-}
-
-.pulse-profile__name {
-  font-size: 18px;
-  font-weight: 700;
-  margin-top: var(--sp-2);
-}
-
-.pulse-profile__username {
-  font-size: var(--fs-caption);
-  color: var(--c-text-muted);
-}
+.pulse-profile__avatar { width: 72px; height: 72px; font-size: 26px; }
+.pulse-profile__name { font-size: 18px; font-weight: 700; margin-top: var(--sp-2); }
+.pulse-profile__username { font-size: var(--fs-caption); color: var(--c-text-muted); }
 
 /* ---------- Menu list ---------- */
 .pulse-menu-list {
@@ -832,10 +763,7 @@
   transition: background-color var(--dur-base) var(--ease-out);
 }
 
-.pulse-menu-item + .pulse-menu-item {
-  border-top: 1px solid var(--c-border);
-}
-
+.pulse-menu-item + .pulse-menu-item { border-top: 1px solid var(--c-border); }
 .pulse-menu-item:hover { background: var(--c-surface-2); }
 
 .pulse-menu-item__icon {
@@ -856,6 +784,30 @@
   flex-shrink: 0;
   color: var(--c-text-dim);
   display: inline-flex;
+}
+
+.pulse-menu-item__value {
+  font-size: var(--fs-small);
+  color: var(--c-text-muted);
+  margin-inline-start: auto;
+}
+
+/* ---------- Version box ---------- */
+.pulse-version-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--sp-6) var(--sp-4);
+  text-align: center;
+}
+
+.pulse-version-box__name { font-size: 16px; font-weight: 700; }
+.pulse-version-box__version { font-size: var(--fs-small); color: var(--c-text-muted); }
+.pulse-version-box__tagline {
+  font-size: var(--fs-micro);
+  color: var(--c-text-dim);
+  margin-top: var(--sp-2);
 }
 
 /* ---------- FAQ ---------- */
@@ -891,9 +843,7 @@
   transition: transform var(--dur-base) var(--ease-out);
 }
 
-.pulse-faq-item[open] .pulse-faq-item__chevron {
-  transform: rotate(180deg);
-}
+.pulse-faq-item[open] .pulse-faq-item__chevron { transform: rotate(180deg); }
 
 .pulse-faq-item__answer {
   padding: 0 var(--sp-4) var(--sp-4);
@@ -974,21 +924,73 @@
 }
 .pulse-notif-item__date { font-size: var(--fs-micro); color: var(--c-text-dim); }
 
-/* ---------- Order detail header ---------- */
-.pulse-order-detail__header {
+/* ---------- Splash ---------- */
+.pulse-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--sp-3);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+  background: var(--c-bg);
+  transition: opacity 320ms var(--ease-out), visibility 320ms var(--ease-out);
 }
 
-.pulse-order-detail__id {
-  font-size: 18px;
-  font-weight: 700;
+.pulse-splash.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
-.pulse-order-detail__date {
-  font-size: var(--fs-small);
-  color: var(--c-text-muted);
-  margin-top: 4px;
+.pulse-splash__logo {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  box-shadow: var(--sh-lg);
+}
+
+.pulse-splash__logo img { width: 100%; height: 100%; object-fit: cover; }
+
+.pulse-splash__name {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.pulse-splash__spinner {
+  width: 24px;
+  height: 24px;
+  margin-top: var(--sp-2);
+  border: 2.5px solid rgba(99, 102, 241, 0.2);
+  border-top-color: var(--c-primary);
+  border-radius: 50%;
+  animation: pulse-spin 800ms linear infinite;
+}
+
+/* ---------- Focus rings for interactive elements ---------- */
+.pulse-menu-item:focus-visible,
+.pulse-connection-card:focus-visible,
+.pulse-plan-card:focus-visible,
+.pulse-method:focus-visible,
+.pulse-quick-action:focus-visible,
+.pulse-order-card:focus-visible,
+.pulse-card-account__copy:focus-visible {
+  outline: 2px solid var(--c-primary);
+  outline-offset: 2px;
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .pulse-splash,
+  .pulse-page {
+    animation: none !important;
+    transition: none !important;
+  }
 }

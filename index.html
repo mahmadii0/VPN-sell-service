@@ -46,23 +46,23 @@
 <body>
   <a href="#screen-root" class="hidden-sr">پرش به محتوای اصلی</a>
 
-  <main id="app" class="pulse-app" role="main">
-    <div id="screen-root">
-      <div class="pulse-boot" aria-live="polite">
-        <div class="pulse-boot__logo">
-          <img
-            src="assets/images/pulse-logo.jpg"
-            alt="PULSE VPN"
-            width="160"
-            height="160"
-            decoding="async"
-          />
-        </div>
-        <h1 class="pulse-boot__title">PULSE VPN</h1>
-        <p class="pulse-boot__tagline">اتصال امن، آزادی بیشتر</p>
-      </div>
+  <!-- Splash -->
+  <div id="splash" class="pulse-splash" aria-hidden="true">
+    <div class="pulse-splash__logo">
+      <img
+        src="assets/images/pulse-logo.jpg"
+        alt=""
+        width="120"
+        height="120"
+        decoding="async"
+      />
     </div>
+    <div class="pulse-splash__name">PULSE VPN</div>
+    <div class="pulse-splash__spinner"></div>
+  </div>
 
+  <main id="app" class="pulse-app" role="main">
+    <div id="screen-root"></div>
     <nav id="bottom-nav" role="navigation" aria-label="ناوبری اصلی"></nav>
   </main>
 
@@ -72,14 +72,7 @@
   <template id="tpl-home">
     <div class="pulse-page">
       <header class="pulse-home-header">
-        <img
-          src="assets/images/pulse-logo.jpg"
-          alt="PULSE VPN"
-          width="40"
-          height="40"
-          decoding="async"
-          class="pulse-home-header__logo"
-        />
+        <img src="assets/images/pulse-logo.jpg" alt="PULSE VPN" width="40" height="40" decoding="async" class="pulse-home-header__logo" />
         <div class="pulse-home-header__info">
           <div class="pulse-home-header__name">PULSE VPN</div>
           <div class="pulse-home-header__tagline">اتصال امن، آزادی بیشتر</div>
@@ -755,6 +748,54 @@
             <span class="pulse-menu-item__label">پشتیبانی</span>
             <span class="pulse-menu-item__chevron" data-icon="chevronLeft"></span>
           </button>
+          <button type="button" class="pulse-menu-item" data-action="settings">
+            <span class="pulse-menu-item__icon" data-icon="settings"></span>
+            <span class="pulse-menu-item__label">تنظیمات</span>
+            <span class="pulse-menu-item__chevron" data-icon="chevronLeft"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- ============================================================
+       SETTINGS
+       ============================================================ -->
+  <template id="tpl-settings">
+    <div class="pulse-page">
+      <header class="pulse-page-header">
+        <button type="button" class="pulse-icon-btn" data-action="back" aria-label="بازگشت"></button>
+        <h1 class="pulse-page-header__title">تنظیمات</h1>
+      </header>
+
+      <div class="pulse-page-section">
+        <div class="pulse-menu-list">
+          <button type="button" class="pulse-menu-item" data-action="language">
+            <span class="pulse-menu-item__icon" data-icon="bookOpen"></span>
+            <span class="pulse-menu-item__label">زبان</span>
+            <span class="pulse-menu-item__value">فارسی</span>
+          </button>
+          <button type="button" class="pulse-menu-item" data-action="notifications-toggle">
+            <span class="pulse-menu-item__icon" data-icon="bell"></span>
+            <span class="pulse-menu-item__label">اعلان‌ها</span>
+            <label class="pulse-toggle" onclick="event.stopPropagation()">
+              <input type="checkbox" checked data-bind="notifToggle">
+              <span class="pulse-toggle__track"></span>
+            </label>
+          </button>
+          <button type="button" class="pulse-menu-item" data-action="about">
+            <span class="pulse-menu-item__icon" data-icon="info"></span>
+            <span class="pulse-menu-item__label">درباره PULSE VPN</span>
+            <span class="pulse-menu-item__chevron" data-icon="chevronLeft"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="pulse-page-section">
+        <div class="pulse-version-box">
+          <div class="pulse-version-box__name">PULSE VPN</div>
+          <div class="pulse-version-box__version pulse-num" data-bind="version">0.1.0</div>
+          <div class="pulse-version-box__tagline">اتصال امن، آزادی بیشتر</div>
         </div>
       </div>
     </div>

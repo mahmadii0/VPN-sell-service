@@ -11,6 +11,7 @@ export const SCREENS = Object.freeze({
   ORDER_DETAIL:     'order-detail',
   WALLET:           'wallet',
   ACCOUNT:          'account',
+  SETTINGS:         'settings',
   SUPPORT:          'support',
   GUIDE:            'guide',
   NOTIFICATIONS:    'notifications'
