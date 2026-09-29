@@ -8,6 +8,7 @@ import { toast } from '../components/ui.js';
 import { renderWithSkeleton } from '../utils/async.js';
 import { listSkeleton } from '../components/skeletons.js';
 import * as haptic from '../utils/haptic.js';
+import { refreshShop } from '../services/shop.js';
 
 const TX_ICON = {
   charge: 'plus',
@@ -64,7 +65,7 @@ function mountTransactions(root) {
     screenId: 'wallet-transactions',
     container: slot,
     skeleton: listSkeleton(3),
-    load: async () => getState().walletTransactions ?? [],
+    load: async () => (await refreshShop()).walletTransactions ?? [],
     render: (txs) => buildTransactionsView(txs)
   });
 }

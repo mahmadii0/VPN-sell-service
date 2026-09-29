@@ -21,6 +21,8 @@ const PAYMENT_METHOD_LABEL = Object.freeze({
 
 const STATUS_MAP = Object.freeze({
   paid:      { label: 'پرداخت شده', variant: 'success' },
+  approved:  { label: 'تایید شده', variant: 'success' },
+  rejected:  { label: 'رد شده', variant: 'error' },
   pending:   { label: 'در انتظار',  variant: 'pending' },
   failed:    { label: 'ناموفق',     variant: 'error' },
   cancelled: { label: 'لغو شده',    variant: 'neutral' },
@@ -87,8 +89,8 @@ function fillOrder(root, order) {
   setText(root, 'orderId', `#${order.id}`);
   setText(root, 'date', formatDate(order.createdAt) || '—');
   setText(root, 'connectionType', CONNECTION_LABEL[order.type] || '—');
-  setText(root, 'duration', `${formatNumber(order.duration)} ماهه`);
-  setText(root, 'volume', order.unlimited ? 'نامحدود' : `${formatNumber(order.volume)} گیگابایت`);
+  setText(root, 'duration', order.duration ? `${formatNumber(order.duration)} ماهه` : order.packageName);
+  setText(root, 'volume', order.unlimited ? 'نامحدود' : order.volume == null ? '—' : `${formatNumber(order.volume)} گیگابایت`);
   setText(root, 'price', formatPrice(order.price));
 
   const status = STATUS_MAP[order.status] || { label: '—', variant: 'neutral' };
@@ -104,7 +106,7 @@ function fillOrder(root, order) {
     hideRow(root, 'methodRow');
   }
 
-  const hasConfig = order.status === 'paid' && order.configLink;
+  const hasConfig = order.status === 'approved' && order.configLink;
   if (hasConfig) {
     setText(root, 'configLink', order.configLink);
   } else {

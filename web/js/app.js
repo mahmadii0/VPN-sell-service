@@ -21,6 +21,7 @@ import { renderNotifications } from './pages/notifications.js';
 import { ready as telegramReady, isAvailable as telegramAvailable } from './services/telegram.js';
 import * as network from './services/network.js';
 import { toast } from './components/ui.js';
+import { refreshShop } from './services/shop.js';
 
 const SPLASH_MIN_MS = 600;
 const SPLASH_FADE_MS = 320;
@@ -75,7 +76,7 @@ function hideSplash(startedAt) {
   }, wait);
 }
 
-function main() {
+async function main() {
   const startedAt = performance.now();
 
   installErrorBoundary();
@@ -93,8 +94,16 @@ function main() {
   }
 
   registerScreens();
+  try {
+    await refreshShop();
+  } catch (err) {
+    toast(err.message, { variant: 'error', duration: 6000 });
+  }
   renderBottomNav(navRoot);
   router.init(screenRoot);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) refreshShop().catch((err) => console.warn('[shop] refresh:', err));
+  });
 
   logBootSignature();
   hideSplash(startedAt);

@@ -7,6 +7,7 @@ import { iconNode } from '../components/icons.js';
 import { renderWithSkeleton } from '../utils/async.js';
 import { listSkeleton } from '../components/skeletons.js';
 import * as haptic from '../utils/haptic.js';
+import { refreshShop } from '../services/shop.js';
 
 const CONNECTION_LABEL = Object.freeze({
   normal: 'عادی',
@@ -16,6 +17,8 @@ const CONNECTION_LABEL = Object.freeze({
 
 const STATUS_MAP = Object.freeze({
   paid:      { label: 'پرداخت شده', variant: 'success' },
+  approved:  { label: 'تایید شده', variant: 'success' },
+  rejected:  { label: 'رد شده', variant: 'error' },
   pending:   { label: 'در انتظار',  variant: 'pending' },
   failed:    { label: 'ناموفق',     variant: 'error' },
   cancelled: { label: 'لغو شده',    variant: 'neutral' },
@@ -62,7 +65,7 @@ function mountOrders(root) {
     screenId: 'my-purchases',
     container: slot,
     skeleton: listSkeleton(3),
-    load: async () => getState().orders ?? [],
+    load: async () => (await refreshShop()).orders ?? [],
     render: (orders) => buildOrdersView(orders)
   });
 }
@@ -90,9 +93,11 @@ function buildOrdersView(orders) {
     setText(node, 'orderId', `#${order.id}`);
     setText(node, 'volume', order.unlimited
       ? 'نامحدود'
-      : `${formatNumber(order.volume)} گیگابایت`);
+      : order.volume == null ? order.packageName : `${formatNumber(order.volume)} گیگابایت`);
 
-    const meta = `${formatNumber(order.duration)} ماهه / ${CONNECTION_LABEL[order.type] || ''}`;
+    const meta = order.duration
+      ? `${formatNumber(order.duration)} ماهه / ${CONNECTION_LABEL[order.type] || ''}`
+      : order.packageName;
     setText(node, 'meta', meta);
     setText(node, 'date', formatDate(order.createdAt) || '—');
     setText(node, 'price', formatPrice(order.price));

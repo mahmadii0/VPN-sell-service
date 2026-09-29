@@ -1,4 +1,6 @@
-// Fixed price tables — Section 8 of master prompt.
+import { getState } from '../state/store.js';
+
+// Display metadata only. Availability and prices come from the Go shop API.
 // Prices are in Toman (raw value, not thousand).
 
 export const PLANS = Object.freeze({
@@ -81,7 +83,10 @@ export function getAllPlans(duration, connectionType) {
   const unlimited = connectionType === CONNECTION_TYPES.NORMAL
     ? getUnlimitedPlan(duration)
     : null;
-  return unlimited ? [...base, unlimited] : base;
+  const catalog = new Map(getState().shopPackages.map((p) => [p.id, p]));
+  return (unlimited ? [...base, unlimited] : base)
+    .filter((plan) => catalog.has(plan.id))
+    .map((plan) => ({ ...plan, price: catalog.get(plan.id).price_toman }));
 }
 
 export function getPlanById(id) {

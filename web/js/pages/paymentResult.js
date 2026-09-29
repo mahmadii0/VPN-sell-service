@@ -6,6 +6,7 @@ import { formatPrice } from '../utils/format.js';
 import { iconNode } from '../components/icons.js';
 import { get } from '../api/client.js';
 import { ENDPOINTS, resolvePath } from '../api/endpoints.js';
+import { refreshShop } from '../services/shop.js';
 
 const POLL_INTERVAL = 8000;
 
@@ -79,11 +80,12 @@ function stopPolling() {
 
 async function fetchStatus(root, paymentId) {
   try {
-    const path = resolvePath(ENDPOINTS.PAYMENT_STATUS.path, { id: paymentId });
+    const path = resolvePath(ENDPOINTS.ORDER_DETAIL.path, { id: paymentId });
     const res = await get(path);
-    const status = res.status;
+    const status = res.status === 'pending' ? 'waiting_admin_approval' : res.status;
+    if (res.status !== 'pending') await refreshShop();
     const finished = ['approved', 'rejected', 'cancelled'].includes(status);
-    showState(root, status, res);
+    showState(root, status, { ...res, amount: res.price_toman });
     return finished;
   } catch (err) {
     console.warn('[payment-result] poll failed:', err);
@@ -104,7 +106,7 @@ function showState(root, status, data) {
       variant: 'success',
       icon: 'checkCircle',
       title: 'پرداخت تایید شد',
-      text: 'اشتراک شما فعال شد. اکنون می‌توانید کانفیگ خود را دریافت کنید.',
+      text: 'پرداخت تایید شد. پس از اختصاص سرویس توسط ادمین، لینک اشتراک در دسترس خواهد بود.',
       primary: { label: 'مشاهده اشتراک', action: 'subscription' }
     },
     rejected: {

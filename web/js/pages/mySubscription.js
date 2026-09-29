@@ -6,6 +6,7 @@ import { formatNumber, formatPrice, formatDate, usagePercent } from '../utils/fo
 import { iconNode } from '../components/icons.js';
 import { toast } from '../components/ui.js';
 import { copyToClipboard } from '../utils/dom.js';
+import { refreshShop } from '../services/shop.js';
 
 const CONNECTION_LABEL = Object.freeze({
   normal: 'عادی',
@@ -20,6 +21,7 @@ export function renderMySubscription() {
   fillStaticIcons(root);
   bindActions(root);
   renderContent(root);
+  refreshShop().then(() => renderContent(root)).catch((err) => toast(err.message, { variant: 'error' }));
 
   return frag;
 }
@@ -45,7 +47,7 @@ function bindActions(root) {
     if (action === 'back') back();
     else if (action === 'buy') navigate(SCREENS.DURATION);
     else if (action === 'copy-config') await copyConfig(root);
-    else if (action === 'redownload') toast('درخواست دریافت مجدد به‌زودی فعال می‌شود', { variant: 'info' });
+    else if (action === 'redownload') await refreshShop().then(() => { renderContent(root); return copyConfig(root); }).catch((err) => toast(err.message, { variant: 'error' }));
   });
 }
 
@@ -70,14 +72,14 @@ function renderContent(root) {
 
 function fillDetails(node, sub) {
   setText(node, 'connectionType', CONNECTION_LABEL[sub.type] || '—');
-  setText(node, 'duration', `${formatNumber(sub.duration)} ماهه`);
+  setText(node, 'duration', sub.duration ? `${formatNumber(sub.duration)} ماهه` : sub.packageName);
   setText(node, 'expiresAt', formatDate(sub.expiresAt) || '—');
 
   const daysLeft = Number(sub.daysLeft) || 0;
-  setText(node, 'daysLeft', `${formatNumber(daysLeft)} روز`);
+  setText(node, 'daysLeft', sub.daysLeft == null ? '—' : `${formatNumber(daysLeft)} روز`);
   setText(node, 'configLink', sub.configLink || '—');
 
-  if (sub.unlimited) {
+  if (sub.unlimited || sub.totalGB == null) {
     hideRow(node, 'volumeRow');
     hideRow(node, 'usageRow');
     hideRow(node, 'progressRow');

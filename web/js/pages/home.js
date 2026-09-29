@@ -112,9 +112,9 @@ function renderSubscription(root, sub) {
   const pct = usagePercent(used, total);
 
   node.querySelector('[data-bind="usage"]').textContent =
-    `${formatNumber(used)} از ${formatNumber(total)} گیگابایت`;
-  node.querySelector('[data-bind="usageBar"]').style.width = `${pct}%`;
-  node.querySelector('[data-bind="daysLeft"]').textContent = `${formatNumber(daysLeft)} روز`;
+    sub.totalGB == null ? 'میزان مصرف در دسترس نیست' : `${formatNumber(used)} از ${formatNumber(total)} گیگابایت`;
+  node.querySelector('[data-bind="usageBar"]').style.width = `${sub.totalGB == null ? 0 : pct}%`;
+  node.querySelector('[data-bind="daysLeft"]').textContent = sub.daysLeft == null ? '—' : `${formatNumber(daysLeft)} روز`;
 }
 
 function renderQuickActions(root) {

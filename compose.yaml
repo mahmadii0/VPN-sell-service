@@ -1,0 +1,36 @@
+services:
+  backend:
+    build: .
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN:?set BOT_TOKEN}
+      BOT_INTERNAL_TOKEN: ${BOT_INTERNAL_TOKEN:?set BOT_INTERNAL_TOKEN}
+      ADMIN_IDS: ${ADMIN_IDS:?set ADMIN_IDS}
+      MINI_APP_URL: ${MINI_APP_URL:?set MINI_APP_URL}
+      CARD_NUMBER: ${CARD_NUMBER:?set CARD_NUMBER}
+      PANEL_URL: ${PANEL_URL:?set PANEL_URL}
+      PANEL_API_TOKEN: ${PANEL_API_TOKEN:?set PANEL_API_TOKEN}
+      PANEL_SUBSCRIPTION_BASE_URL: ${PANEL_SUBSCRIPTION_BASE_URL:?set PANEL_SUBSCRIPTION_BASE_URL}
+      PACKAGES_JSON: ${PACKAGES_JSON:?set PACKAGES_JSON}
+      DB_PATH: /data/shop.sqlite
+      RECEIPT_DIR: /data/receipts
+      LISTEN_ADDR: :8080
+    volumes:
+      - shop-data:/data
+      - ./shop.sqlite:/seed/shop.sqlite:ro
+      - ./receipts:/seed/receipts:ro
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+  bot:
+    build: ./bot
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN:?set BOT_TOKEN}
+      BOT_INTERNAL_TOKEN: ${BOT_INTERNAL_TOKEN:?set BOT_INTERNAL_TOKEN}
+      ADMIN_IDS: ${ADMIN_IDS:?set ADMIN_IDS}
+      MINI_APP_URL: ${MINI_APP_URL:?set MINI_APP_URL}
+      BACKEND_URL: http://backend:8080
+    depends_on:
+      - backend
+    restart: unless-stopped
+volumes:
+  shop-data:

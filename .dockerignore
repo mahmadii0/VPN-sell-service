@@ -1,0 +1,6 @@
+.git
+.env
+shop.sqlite*
+receipts
+bot/__pycache__
+*.log
