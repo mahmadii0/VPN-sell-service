@@ -2,30 +2,36 @@ import { SCREENS } from '../core/constants.js';
 import { getState, setState } from '../state/store.js';
 import { navigate, back } from '../core/router.js';
 import { useTemplate } from '../core/template.js';
-import { getAllPlansForDuration } from '../pricing/pricing.js';
+import { getAllPlans } from '../pricing/pricing.js';
 import { formatNumber } from '../utils/format.js';
 import { iconNode } from '../components/icons.js';
 
-const POPULAR_BY_DURATION = {
-  1: '1M-50GB',
-  2: '2M-80GB',
-  3: '3M-100GB'
-};
+const POPULAR_IDS = Object.freeze({
+  normal_1m: 'N-1M-50GB',
+  tunnel_1m: 'T-1M-50GB',
+  normal_2m: 'N-2M-80GB',
+  tunnel_2m: 'T-2M-70GB'
+});
 
-export function renderSuggestedPlans({ params } = {}) {
-  const frag = useTemplate('tpl-suggested-plans');
+const CONNECTION_LABEL = Object.freeze({
+  normal: 'عادی',
+  tunnel: 'تانل'
+});
+
+export function renderPlans({ params } = {}) {
+  const frag = useTemplate('tpl-plans');
   const root = frag.firstElementChild;
 
-  const duration = params?.duration
-    ?? getState().selectedDuration
-    ?? 1;
+  const state = getState();
+  const duration = params?.duration ?? state.selectedDuration ?? 1;
+  const connectionType = params?.connectionType ?? state.selectedConnectionType ?? 'normal';
 
-  const plans = getAllPlansForDuration(duration);
+  const plans = getAllPlans(duration, connectionType);
 
   fillStaticIcons(root);
   bindActions(root);
-  setTitle(root, duration);
-  renderPlans(root, plans, duration);
+  setTitle(root, duration, connectionType);
+  renderPlanCards(root, plans, duration, connectionType);
   syncSelection(root);
 
   return frag;
@@ -33,7 +39,6 @@ export function renderSuggestedPlans({ params } = {}) {
 
 function fillStaticIcons(root) {
   const iconMap = { back: 'arrowRight' };
-
   root.querySelectorAll('[data-icon]').forEach((slot) => {
     const raw = slot.getAttribute('data-icon');
     if (!raw) return;
@@ -48,25 +53,26 @@ function bindActions(root) {
   root.addEventListener('click', (e) => {
     const trigger = e.target.closest('[data-action]');
     if (!trigger) return;
-
     const action = trigger.getAttribute('data-action');
     if (action === 'back') back();
-    else if (action === 'custom') navigate(SCREENS.CUSTOM_PLAN);
     else if (action === 'continue') continueToCheckout();
   });
 }
 
-function setTitle(root, duration) {
+function setTitle(root, duration, connectionType) {
   const title = root.querySelector('[data-bind="pageTitle"]');
-  if (title) title.textContent = `پلن‌های ${formatNumber(duration)} ماهه`;
+  if (title) {
+    title.textContent =
+      `پلن‌های ${formatNumber(duration)} ماهه — ${CONNECTION_LABEL[connectionType] || ''}`;
+  }
 }
 
-function renderPlans(root, plans, duration) {
+function renderPlanCards(root, plans, duration, connectionType) {
   const slot = root.querySelector('[data-slot="plans"]');
   if (!slot) return;
 
   const frag = document.createDocumentFragment();
-  const popularId = POPULAR_BY_DURATION[duration];
+  const popularId = POPULAR_IDS[`${connectionType}_${duration}m`];
 
   for (const plan of plans) {
     const tpl = useTemplate('tpl-plan-card');
@@ -83,7 +89,7 @@ function renderPlans(root, plans, duration) {
       node.querySelector('[data-bind="volume"]').textContent =
         `${formatNumber(plan.volume)} گیگابایت`;
       node.querySelector('[data-bind="meta"]').textContent =
-        `${formatNumber(plan.duration)} ماهه / به ازای هر گیگابایت ${formatNumber(plan.pricePerGB)} تومان`;
+        `${formatNumber(plan.duration)} ماهه / ${CONNECTION_LABEL[plan.type] || ''}`;
     }
 
     node.querySelector('[data-bind="price"]').textContent =
@@ -112,8 +118,7 @@ function syncSelection(root) {
   const { selectedPlan } = getState();
 
   root.querySelectorAll('[data-slot="plans"] [data-plan-id]').forEach((card) => {
-    const active = selectedPlan?.id === card.dataset.planId;
-    card.classList.toggle('is-selected', active);
+    card.classList.toggle('is-selected', selectedPlan?.id === card.dataset.planId);
   });
 
   const btn = root.querySelector('[data-action="continue"]');

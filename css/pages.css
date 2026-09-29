@@ -355,3 +355,104 @@
   background: var(--c-primary);
   border-radius: 50%;
 }
+
+/* ---------- Connection type cards ---------- */
+.pulse-connection-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding-inline: var(--sp-4);
+}
+
+.pulse-connection-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  text-align: right;
+  transition:
+    background-color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+
+.pulse-connection-card:hover {
+  border-color: var(--c-border-strong);
+  background: var(--c-surface-2);
+}
+
+.pulse-connection-card.is-selected {
+  border-color: var(--c-primary);
+  background: var(--c-primary-soft);
+  box-shadow: 0 0 20px var(--c-primary-glow);
+}
+
+.pulse-connection-card--tunnel.is-selected {
+  border-color: var(--c-secondary);
+  background: var(--c-secondary-soft);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.30);
+}
+
+.pulse-connection-card__radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--c-border-strong);
+  position: relative;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: border-color var(--dur-base) var(--ease-out);
+}
+
+.pulse-connection-card.is-selected .pulse-connection-card__radio {
+  border-color: var(--c-primary);
+}
+
+.pulse-connection-card--tunnel.is-selected .pulse-connection-card__radio {
+  border-color: var(--c-secondary);
+}
+
+.pulse-connection-card.is-selected .pulse-connection-card__radio::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--c-primary);
+}
+
+.pulse-connection-card--tunnel.is-selected .pulse-connection-card__radio::after {
+  background: var(--c-secondary);
+}
+
+.pulse-connection-card__body { flex: 1; min-width: 0; }
+
+.pulse-connection-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-1);
+}
+
+.pulse-connection-card__title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.pulse-connection-card__badge {
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+  background: var(--grad-primary);
+  color: #fff;
+}
+
+.pulse-connection-card__description {
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
+  color: var(--c-text-muted);
+}

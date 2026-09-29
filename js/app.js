@@ -4,8 +4,8 @@ import * as router from './core/router.js';
 import { renderBottomNav } from './components/bottomNav.js';
 import { renderHome } from './pages/home.js';
 import { renderDuration } from './pages/duration.js';
-import { renderSuggestedPlans } from './pages/suggestedPlans.js';
-import { renderCustomPlan } from './pages/customPlan.js';
+import { renderConnectionType } from './pages/connectionType.js';
+import { renderPlans } from './pages/plans.js';
 import { renderCheckout } from './pages/checkout.js';
 import { renderPlaceholder } from './pages/placeholder.js';
 import { ready as telegramReady, isAvailable as telegramAvailable } from './services/telegram.js';
@@ -29,11 +29,10 @@ function installErrorBoundary() {
 function registerScreens() {
   router.register(SCREENS.HOME, renderHome);
   router.register(SCREENS.DURATION, renderDuration);
-  router.register(SCREENS.SUGGESTED_PLANS, renderSuggestedPlans);
-  router.register(SCREENS.CUSTOM_PLAN, renderCustomPlan);
+  router.register(SCREENS.CONNECTION_TYPE, renderConnectionType);
+  router.register(SCREENS.PLANS, renderPlans);
   router.register(SCREENS.CHECKOUT, renderCheckout);
 
-  // Placeholders until built
   router.register(SCREENS.PAYMENT_RESULT, renderPlaceholder);
   router.register(SCREENS.MY_SUBSCRIPTION, renderPlaceholder);
   router.register(SCREENS.MY_PURCHASES, renderPlaceholder);

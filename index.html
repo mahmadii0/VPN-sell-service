@@ -66,10 +66,6 @@
     <nav id="bottom-nav" role="navigation" aria-label="ناوبری اصلی"></nav>
   </main>
 
-  <!-- ============================================================
-       TEMPLATES
-       ============================================================ -->
-
   <!-- ========== HOME ========== -->
   <template id="tpl-home">
     <div class="pulse-page">
@@ -128,7 +124,6 @@
     </div>
   </template>
 
-  <!-- ========== HOME / SUBSCRIPTION STATES ========== -->
   <template id="tpl-home-sub-empty">
     <div class="pulse-card">
       <div class="pulse-empty">
@@ -166,7 +161,6 @@
     </div>
   </template>
 
-  <!-- ========== QUICK ACTION ========== -->
   <template id="tpl-quick-action">
     <button type="button" class="pulse-quick-action">
       <div class="pulse-quick-action__icon" data-icon></div>
@@ -174,7 +168,6 @@
     </button>
   </template>
 
-  <!-- ========== BOTTOM NAV ITEM ========== -->
   <template id="tpl-bottom-nav-item">
     <button type="button" class="pulse-bottom-nav__item">
       <span data-icon></span>
@@ -193,22 +186,11 @@
 
       <div class="pulse-page-section">
         <p class="pulse-duration-intro">
-          مدت اشتراک خود را انتخاب کنید. با انتخاب مدت بیشتر، قیمت هر گیگابایت به صرفه‌تر می‌شود.
+          مدت اشتراک خود را انتخاب کنید. سپس نوع اتصال و حجم را انتخاب خواهید کرد.
         </p>
       </div>
 
       <div class="pulse-page-row" data-slot="durations"></div>
-
-      <div class="pulse-page-section">
-        <div class="pulse-info-box">
-          <span class="pulse-info-box__icon" data-icon="info"></span>
-          <div class="pulse-info-box__text">
-            مدت‌های ۴، ۵ و ۶ ماهه نیز در
-            <button type="button" class="pulse-info-box__link" data-action="custom">پلن سفارشی</button>
-            قابل انتخاب هستند.
-          </div>
-        </div>
-      </div>
 
       <div class="pulse-page-section pulse-mt-2">
         <button
@@ -229,39 +211,72 @@
       <div class="pulse-plan-card__radio"></div>
       <div class="pulse-plan-card__body">
         <div class="pulse-plan-card__volume" data-bind="title"></div>
-        <div class="pulse-plan-card__meta" data-bind="rate"></div>
+        <div class="pulse-plan-card__meta">پلن‌های این مدت در مرحله بعد نمایش داده می‌شود</div>
       </div>
       <span class="pulse-plan-card__chevron" data-icon="chevronLeft"></span>
     </button>
   </template>
 
-  <!-- ========== SUGGESTED PLANS ========== -->
-  <template id="tpl-suggested-plans">
+  <!-- ========== CONNECTION TYPE ========== -->
+  <template id="tpl-connection-type">
     <div class="pulse-page">
 
       <header class="pulse-page-header">
         <button type="button" class="pulse-icon-btn" data-action="back" aria-label="بازگشت"></button>
-        <h1 class="pulse-page-header__title" data-bind="pageTitle">پلن‌های پیشنهادی</h1>
+        <h1 class="pulse-page-header__title">انتخاب نوع اتصال</h1>
       </header>
 
       <div class="pulse-page-section">
         <p class="pulse-duration-intro">
-          یکی از پلن‌های آماده را انتخاب کنید یا پلن دلخواه خودتان را بسازید.
+          نوع اتصال خود را انتخاب کنید. تانل پرسرعت‌تر و پایدارتر از عادی است.
+        </p>
+      </div>
+
+      <div class="pulse-connection-list" data-slot="options"></div>
+
+      <div class="pulse-page-section pulse-mt-2">
+        <button
+          type="button"
+          class="pulse-btn pulse-btn--primary pulse-btn--lg pulse-btn--block"
+          data-action="continue"
+          disabled
+        >
+          ادامه
+        </button>
+      </div>
+
+    </div>
+  </template>
+
+  <template id="tpl-connection-card">
+    <button type="button" class="pulse-connection-card">
+      <div class="pulse-connection-card__radio"></div>
+      <div class="pulse-connection-card__body">
+        <div class="pulse-connection-card__header">
+          <span class="pulse-connection-card__title" data-bind="title"></span>
+          <span class="pulse-connection-card__badge" data-bind="badge" hidden>پرسرعت</span>
+        </div>
+        <div class="pulse-connection-card__description" data-bind="description"></div>
+      </div>
+    </button>
+  </template>
+
+  <!-- ========== PLANS LIST ========== -->
+  <template id="tpl-plans">
+    <div class="pulse-page">
+
+      <header class="pulse-page-header">
+        <button type="button" class="pulse-icon-btn" data-action="back" aria-label="بازگشت"></button>
+        <h1 class="pulse-page-header__title" data-bind="pageTitle">پلن‌ها</h1>
+      </header>
+
+      <div class="pulse-page-section">
+        <p class="pulse-duration-intro">
+          یکی از پلن‌های زیر را انتخاب کنید.
         </p>
       </div>
 
       <div class="pulse-page-row" data-slot="plans"></div>
-
-      <div class="pulse-page-section">
-        <button type="button" class="pulse-custom-cta" data-action="custom">
-          <span class="pulse-custom-cta__icon" data-icon="settings"></span>
-          <div class="pulse-custom-cta__body">
-            <div class="pulse-custom-cta__title">پلن سفارشی</div>
-            <div class="pulse-custom-cta__text">حجم و مدت دلخواه خودت را انتخاب کن</div>
-          </div>
-          <span class="pulse-custom-cta__chevron" data-icon="chevronLeft"></span>
-        </button>
-      </div>
 
       <div class="pulse-page-section pulse-mt-2">
         <button
@@ -289,89 +304,6 @@
     </button>
   </template>
 
-  <!-- ========== CUSTOM PLAN ========== -->
-  <template id="tpl-custom-plan">
-    <div class="pulse-page">
-
-      <header class="pulse-page-header">
-        <button type="button" class="pulse-icon-btn" data-action="back" aria-label="بازگشت"></button>
-        <h1 class="pulse-page-header__title">پلن سفارشی</h1>
-      </header>
-
-      <div class="pulse-page-section">
-        <p class="pulse-duration-intro">
-          حجم و مدت دلخواه خود را انتخاب کنید. قیمت به صورت زنده محاسبه می‌شود.
-        </p>
-      </div>
-
-      <div class="pulse-page-section">
-        <div class="pulse-section-label">قیمت هر گیگابایت بر اساس مدت</div>
-        <div class="pulse-rate-chips" data-slot="rateChips"></div>
-      </div>
-
-      <div class="pulse-page-section">
-        <div class="pulse-section-label">مدت زمان</div>
-        <div class="pulse-pills" data-slot="durationPills"></div>
-      </div>
-
-      <div class="pulse-page-section">
-        <div class="pulse-section-label">حجم (۲۰ تا ۳۰۰ گیگابایت)</div>
-        <div class="pulse-stepper">
-          <button type="button" class="pulse-stepper__btn" data-action="vol-minus" aria-label="کاهش">−</button>
-          <span class="pulse-stepper__value">
-            <span class="pulse-num" data-bind="volValueNum">20</span>
-            <span> گیگابایت</span>
-          </span>
-          <button type="button" class="pulse-stepper__btn" data-action="vol-plus" aria-label="افزایش">+</button>
-        </div>
-      </div>
-
-      <div class="pulse-page-section">
-        <div class="pulse-price-box">
-          <div class="pulse-price-box__row">
-            <span class="pulse-price-box__label">قیمت هر گیگابایت</span>
-            <span class="pulse-price-box__value pulse-num" data-bind="pricePerGB"></span>
-          </div>
-          <div class="pulse-price-box__row">
-            <span class="pulse-price-box__label">حجم انتخابی</span>
-            <span class="pulse-price-box__value pulse-num" data-bind="volumeDisplay"></span>
-          </div>
-          <div class="pulse-price-box__row">
-            <span class="pulse-price-box__label">مدت انتخابی</span>
-            <span class="pulse-price-box__value pulse-num" data-bind="durationDisplay"></span>
-          </div>
-          <div class="pulse-price-box__row">
-            <span class="pulse-price-box__label">قیمت نهایی</span>
-            <span class="pulse-price-box__value pulse-price-box__value--total pulse-num" data-bind="finalPrice"></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="pulse-page-section pulse-mt-2">
-        <button
-          type="button"
-          class="pulse-btn pulse-btn--primary pulse-btn--lg pulse-btn--block"
-          data-action="continue"
-        >
-          ادامه
-        </button>
-      </div>
-
-    </div>
-  </template>
-
-  <template id="tpl-rate-chip">
-    <button type="button" class="pulse-rate-chip" data-tier="">
-      <span data-bind="label"></span>
-    </button>
-  </template>
-
-  <template id="tpl-duration-pill">
-    <button type="button" class="pulse-pill" data-duration="">
-      <span data-bind="label"></span>
-    </button>
-  </template>
-
   <!-- ========== CHECKOUT ========== -->
   <template id="tpl-checkout">
     <div class="pulse-page">
@@ -390,7 +322,7 @@
       <div class="pulse-page-section">
         <div class="pulse-card">
           <div class="pulse-checkout-row">
-            <span class="pulse-checkout-row__label">نوع اشتراک</span>
+            <span class="pulse-checkout-row__label">نوع اتصال</span>
             <span class="pulse-checkout-row__value" data-bind="type"></span>
           </div>
           <div class="pulse-checkout-row">
@@ -400,10 +332,6 @@
           <div class="pulse-checkout-row">
             <span class="pulse-checkout-row__label">حجم</span>
             <span class="pulse-checkout-row__value" data-bind="volume"></span>
-          </div>
-          <div class="pulse-checkout-row" data-row="rateRow" hidden>
-            <span class="pulse-checkout-row__label">قیمت هر گیگابایت</span>
-            <span class="pulse-checkout-row__value" data-bind="rate"></span>
           </div>
         </div>
       </div>
@@ -432,20 +360,6 @@
             موجودی کیف پول شما برای این خرید کافی نیست.
             <button type="button" class="pulse-info-box__link" data-action="wallet">شارژ کیف پول</button>
           </div>
-        </div>
-      </div>
-
-      <div class="pulse-page-section">
-        <div class="pulse-section-label">روش پرداخت</div>
-        <div class="pulse-payment-method">
-          <span class="pulse-payment-method__icon" data-icon="wallet"></span>
-          <div class="pulse-payment-method__body">
-            <div class="pulse-payment-method__title">کیف پول PULSE VPN</div>
-            <div class="pulse-payment-method__text">پرداخت از موجودی کیف پول</div>
-          </div>
-          <span class="pulse-payment-method__check">
-            <span class="pulse-payment-method__dot"></span>
-          </span>
         </div>
       </div>
 

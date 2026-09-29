@@ -3,7 +3,6 @@ import { getState, setState } from '../state/store.js';
 import { navigate, back } from '../core/router.js';
 import { useTemplate } from '../core/template.js';
 import { getDurationOptions } from '../pricing/pricing.js';
-import { formatNumber } from '../utils/format.js';
 import { iconNode } from '../components/icons.js';
 
 export function renderDuration() {
@@ -20,9 +19,9 @@ export function renderDuration() {
 
 function fillStaticIcons(root) {
   const iconMap = { back: 'arrowRight' };
-
   root.querySelectorAll('[data-icon]').forEach((slot) => {
     const raw = slot.getAttribute('data-icon');
+    if (!raw) return;
     const name = iconMap[raw] || raw;
     const size = slot.closest('.pulse-icon-btn') ? 20 : 18;
     const svg = iconNode(name, { size });
@@ -34,11 +33,9 @@ function bindActions(root) {
   root.addEventListener('click', (e) => {
     const trigger = e.target.closest('[data-action]');
     if (!trigger) return;
-
     const action = trigger.getAttribute('data-action');
     if (action === 'back') back();
-    else if (action === 'custom') navigate(SCREENS.CUSTOM_PLAN);
-    else if (action === 'continue') continueToPlans();
+    else if (action === 'continue') continueToConnectionType();
   });
 }
 
@@ -46,22 +43,19 @@ function renderDurationCards(root) {
   const slot = root.querySelector('[data-slot="durations"]');
   if (!slot) return;
 
-  const options = getDurationOptions().filter((o) => o.duration <= 3);
   const frag = document.createDocumentFragment();
 
-  for (const opt of options) {
+  for (const opt of getDurationOptions()) {
     const tpl = useTemplate('tpl-duration-card');
     const node = tpl.firstElementChild;
 
     node.dataset.duration = String(opt.duration);
-    node.querySelector('[data-bind="title"]').textContent = `${formatNumber(opt.duration)} ماهه`;
-    node.querySelector('[data-bind="rate"]').textContent =
-      `به ازای هر گیگابایت ${formatNumber(opt.pricePerGB)} تومان`;
+    node.querySelector('[data-bind="title"]').textContent = opt.label;
 
     const chevronSlot = node.querySelector('[data-icon="chevronLeft"]');
     if (chevronSlot) {
-      const chevronSvg = iconNode('chevronLeft', { size: 18 });
-      if (chevronSvg) chevronSlot.replaceWith(chevronSvg);
+      const svg = iconNode('chevronLeft', { size: 18 });
+      if (svg) chevronSlot.replaceWith(svg);
     }
 
     node.addEventListener('click', () => toggleDuration(root, opt.duration));
@@ -74,7 +68,11 @@ function renderDurationCards(root) {
 function toggleDuration(root, duration) {
   const { selectedDuration } = getState();
   const next = selectedDuration === duration ? null : duration;
-  setState({ selectedDuration: next });
+  setState({
+    selectedDuration: next,
+    selectedConnectionType: null,
+    selectedPlan: null
+  });
   syncSelection(root);
 }
 
@@ -90,8 +88,8 @@ function syncSelection(root) {
   if (btn) btn.disabled = selectedDuration === null;
 }
 
-function continueToPlans() {
+function continueToConnectionType() {
   const { selectedDuration } = getState();
   if (!selectedDuration) return;
-  navigate(SCREENS.SUGGESTED_PLANS, { duration: selectedDuration });
+  navigate(SCREENS.CONNECTION_TYPE, { duration: selectedDuration });
 }

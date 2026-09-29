@@ -1,119 +1,94 @@
-import { DURATIONS } from '../core/constants.js';
+// Fixed price tables — Section 8 of master prompt.
+// Prices are in Toman (raw value, not thousand).
 
-// Rate per GB by duration (months) — Section 8.1
-export const PRICE_PER_GB_BY_DURATION = Object.freeze({
-  1: 5000,
-  2: 6000,
-  3: 6000,
-  4: 8000,
-  5: 8000,
-  6: 8000
+export const PLANS = Object.freeze({
+  normal_1m: Object.freeze([
+    Object.freeze({ id: 'N-1M-30GB',  type: 'normal', duration: 1, volume: 30,  price: 150000 }),
+    Object.freeze({ id: 'N-1M-50GB',  type: 'normal', duration: 1, volume: 50,  price: 250000 }),
+    Object.freeze({ id: 'N-1M-70GB',  type: 'normal', duration: 1, volume: 70,  price: 350000 })
+  ]),
+  tunnel_1m: Object.freeze([
+    Object.freeze({ id: 'T-1M-30GB',  type: 'tunnel', duration: 1, volume: 30,  price: 240000 }),
+    Object.freeze({ id: 'T-1M-50GB',  type: 'tunnel', duration: 1, volume: 50,  price: 400000 }),
+    Object.freeze({ id: 'T-1M-60GB',  type: 'tunnel', duration: 1, volume: 60,  price: 480000 }),
+    Object.freeze({ id: 'T-1M-70GB',  type: 'tunnel', duration: 1, volume: 70,  price: 560000 })
+  ]),
+  normal_2m: Object.freeze([
+    Object.freeze({ id: 'N-2M-60GB',  type: 'normal', duration: 2, volume: 60,  price: 360000 }),
+    Object.freeze({ id: 'N-2M-80GB',  type: 'normal', duration: 2, volume: 80,  price: 480000 }),
+    Object.freeze({ id: 'N-2M-100GB', type: 'normal', duration: 2, volume: 100, price: 600000 })
+  ]),
+  tunnel_2m: Object.freeze([
+    Object.freeze({ id: 'T-2M-50GB',  type: 'tunnel', duration: 2, volume: 50,  price: 540000 }),
+    Object.freeze({ id: 'T-2M-70GB',  type: 'tunnel', duration: 2, volume: 70,  price: 630000 }),
+    Object.freeze({ id: 'T-2M-80GB',  type: 'tunnel', duration: 2, volume: 80,  price: 720000 }),
+    Object.freeze({ id: 'T-2M-100GB', type: 'tunnel', duration: 2, volume: 100, price: 900000 })
+  ])
 });
 
-// Custom plan bounds — Section 8.2
-export const CUSTOM_PLAN = Object.freeze({
-  minVolume: 20,
-  maxVolume: 300,
-  volumeStep: 5,
-  defaultVolume: 20,
-  minDuration: 1,
-  maxDuration: 6
+export const UNLIMITED_PLAN = Object.freeze({
+  id: 'U-1M',
+  type: 'unlimited',
+  duration: 1,
+  volume: null,
+  unlimited: true,
+  price: 600000
 });
 
-// Fixed volumes for curated plans — Section 8.3
-const SUGGESTED_VOLUMES = Object.freeze({
-  1: [20, 30, 50, 60, 70],
-  2: [40, 60, 70, 80],
-  3: [80, 100, 120, 140]
+export const CONNECTION_TYPES = Object.freeze({
+  NORMAL: 'normal',
+  TUNNEL: 'tunnel'
 });
 
-// Unlimited prices — only 1M and 2M. 3-6M intentionally undefined.
-const UNLIMITED_PRICES = Object.freeze({
-  1: 700000,
-  2: 1100000
-});
+export const DURATIONS = Object.freeze([1, 2]);
 
-export function getPricePerGB(durationMonths) {
-  return PRICE_PER_GB_BY_DURATION[durationMonths] ?? null;
-}
-
-export function calculatePrice(volumeGB, durationMonths) {
-  const rate = PRICE_PER_GB_BY_DURATION[durationMonths];
-  const volume = Number(volumeGB);
-  if (!rate || !Number.isFinite(volume) || volume <= 0) return null;
-  return volume * rate;
-}
-
-export function hasSuggestedPlans(durationMonths) {
-  return Boolean(SUGGESTED_VOLUMES[durationMonths]);
-}
-
-export function getSuggestedPlans(durationMonths) {
-  const volumes = SUGGESTED_VOLUMES[durationMonths];
-  if (!volumes) return [];
-  const rate = PRICE_PER_GB_BY_DURATION[durationMonths];
-  return volumes.map((volume) => ({
-    id: `${durationMonths}M-${volume}GB`,
-    type: 'suggested',
-    duration: durationMonths,
-    volume,
-    pricePerGB: rate,
-    price: volume * rate
-  }));
-}
-
-export function hasUnlimitedPlan(durationMonths) {
-  return Boolean(UNLIMITED_PRICES[durationMonths]);
-}
-
-export function getUnlimitedPlan(durationMonths) {
-  const price = UNLIMITED_PRICES[durationMonths];
-  if (!price) return null;
-  return {
-    id: `${durationMonths}M-UNLIMITED`,
-    type: 'unlimited',
-    duration: durationMonths,
-    volume: null,
-    unlimited: true,
-    pricePerGB: null,
-    price
-  };
-}
-
-// All plans for a duration: curated + unlimited (if exists).
-export function getAllPlansForDuration(durationMonths) {
-  const suggested = getSuggestedPlans(durationMonths);
-  const unlimited = getUnlimitedPlan(durationMonths);
-  return unlimited ? [...suggested, unlimited] : suggested;
-}
-
-export function buildCustomPlan(volumeGB, durationMonths) {
-  const volume = Number(volumeGB);
-  const price = calculatePrice(volume, durationMonths);
-  if (price === null) return null;
-  return {
-    id: `CUSTOM-${durationMonths}-${volume}`,
-    type: 'custom',
-    duration: durationMonths,
-    volume,
-    pricePerGB: PRICE_PER_GB_BY_DURATION[durationMonths],
-    price
-  };
-}
-
-// Maps duration to its rate tier — used by Custom Plan UI chips.
-export function getRateTier(durationMonths) {
-  if (durationMonths === 1) return 'tier-1';
-  if (durationMonths === 2 || durationMonths === 3) return 'tier-2';
-  if (durationMonths >= 4 && durationMonths <= 6) return 'tier-3';
-  return null;
-}
-
-// Options for the Duration Selection screen.
 export function getDurationOptions() {
-  return DURATIONS.map((duration) => ({
-    duration,
-    pricePerGB: PRICE_PER_GB_BY_DURATION[duration],
-    hasUnlimited: hasUnlimitedPlan(duration)
-  }));
+  return [
+    { duration: 1, label: '1 ماهه' },
+    { duration: 2, label: '2 ماهه' }
+  ];
+}
+
+export function getConnectionOptions() {
+  return [
+    {
+      type: CONNECTION_TYPES.NORMAL,
+      label: 'عادی',
+      description: 'اتصال معمولی و پایدار. مناسب استفاده روزمره.'
+    },
+    {
+      type: CONNECTION_TYPES.TUNNEL,
+      label: 'تانل',
+      description: 'پرسرعت‌تر و پایدارتر از عادی. مناسب مصرف سنگین و استریم.',
+      highlight: true
+    }
+  ];
+}
+
+export function getPlans(duration, connectionType) {
+  const key = `${connectionType}_${duration}m`;
+  const list = PLANS[key];
+  return list ? list.map((p) => ({ ...p })) : [];
+}
+
+export function getUnlimitedPlan(duration) {
+  return duration === 1 ? { ...UNLIMITED_PLAN } : null;
+}
+
+// Unlimited is only offered for the normal connection, 1-month duration.
+export function getAllPlans(duration, connectionType) {
+  const base = getPlans(duration, connectionType);
+  const unlimited = connectionType === CONNECTION_TYPES.NORMAL
+    ? getUnlimitedPlan(duration)
+    : null;
+  return unlimited ? [...base, unlimited] : base;
+}
+
+export function getPlanById(id) {
+  for (const key of Object.keys(PLANS)) {
+    const found = PLANS[key].find((p) => p.id === id);
+    if (found) return { ...found };
+  }
+  if (id === UNLIMITED_PLAN.id) return { ...UNLIMITED_PLAN };
+  return null;
 }
