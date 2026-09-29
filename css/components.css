@@ -813,3 +813,91 @@
   0%, 100% { opacity: 1; }
   50%      { opacity: 0.55; }
 }
+
+
+/* ============================================================
+   SKELETON LAYOUTS (page-level)
+   ============================================================ */
+
+/* Plan list skeleton */
+.pulse-skeleton-plan {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-lg);
+}
+
+.pulse-skeleton-plan__radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pulse-skeleton-plan__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pulse-skeleton-plan__price {
+  width: 80px;
+  flex-shrink: 0;
+}
+
+/* Order / transaction list skeleton */
+.pulse-skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+}
+
+.pulse-skeleton-row__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pulse-skeleton-row__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pulse-skeleton-row__end {
+  width: 70px;
+  flex-shrink: 0;
+}
+
+/* Card summary skeleton */
+.pulse-skeleton-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+}
+
+.pulse-skeleton-card__line {
+  height: 14px;
+}
+
+.pulse-skeleton-card__line--short { width: 55%; }
+.pulse-skeleton-card__line--mid   { width: 75%; }
+
+.pulse-skeleton-card__title {
+  height: 18px;
+  width: 40%;
+}

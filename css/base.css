@@ -291,3 +291,43 @@
     }
   }
 }
+
+/* ============================================================
+   PAGE TRANSITIONS
+   ============================================================ */
+@keyframes pulse-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-page-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.pulse-page.is-entering {
+  animation: pulse-page-enter var(--dur-slow) var(--ease-out) both;
+}
+
+#screen-root.is-leaving > * {
+  animation: pulse-page-exit var(--dur-fast) var(--ease-in) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-page.is-entering,
+  #screen-root.is-leaving > * {
+    animation: none !important;
+  }
+}

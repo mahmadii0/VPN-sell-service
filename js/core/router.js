@@ -8,6 +8,7 @@ let pendingParams = null;
 let lastNavigationAt = 0;
 
 const NAV_THROTTLE_MS = 180;
+const EXIT_MS = 120;
 
 export function register(id, renderFn) {
   registry.set(id, renderFn);
@@ -58,7 +59,6 @@ export function navigate(id, params = null) {
     return;
   }
 
-  // Throttle: prevents double-tap flicker and rapid unintended navigation.
   const now = performance.now();
   if (now - lastNavigationAt < NAV_THROTTLE_MS) return;
   lastNavigationAt = now;
@@ -108,25 +108,51 @@ function syncBackButton() {
   }
 }
 
+function prefersReducedMotion() {
+  return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+}
+
 async function render(screenId, params) {
   if (!mountNode) return;
 
   const renderFn = registry.get(screenId);
   if (!renderFn) return;
 
+  // 1. Cleanup previous screen
   if (typeof currentCleanup === 'function') {
     try { currentCleanup(); } catch (e) { console.error('[router] cleanup:', e); }
     currentCleanup = null;
   }
 
+  // 2. Exit animation on the old node (if it exists and motion is allowed)
+  const oldChildren = Array.from(mountNode.children);
+  if (oldChildren.length && !prefersReducedMotion()) {
+    mountNode.classList.add('is-leaving');
+    await new Promise((r) => setTimeout(r, EXIT_MS));
+    mountNode.classList.remove('is-leaving');
+  }
+
   mountNode.innerHTML = '';
 
+  // 3. Render the new screen
   try {
     const result = await renderFn({ params });
     const node = result?.node ?? result;
     currentCleanup = result?.cleanup ?? null;
-    if (node instanceof Node) mountNode.appendChild(node);
+
+    if (node instanceof Node) {
+      if (node.nodeType === 1) node.classList.add('is-entering');
+      mountNode.appendChild(node);
+
+      // Remove the class after animation completes so future re-renders stay clean
+      if (node.nodeType === 1 && !prefersReducedMotion()) {
+        setTimeout(() => node.classList.remove('is-entering'), 400);
+      } else if (node.nodeType === 1) {
+        node.classList.remove('is-entering');
+      }
+    }
   } catch (err) {
     console.error('[router] render error:', err);
   }
 }
+
