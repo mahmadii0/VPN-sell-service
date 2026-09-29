@@ -66,6 +66,10 @@
     <nav id="bottom-nav" role="navigation" aria-label="ناوبری اصلی"></nav>
   </main>
 
+  <!-- ============================================================
+       TEMPLATES
+       ============================================================ -->
+
   <!-- ========== HOME ========== -->
   <template id="tpl-home">
     <div class="pulse-page">
@@ -422,6 +426,146 @@
 
       <div class="pulse-page-section pulse-mt-2" data-slot="actions"></div>
     </div>
+  </template>
+
+  <!-- ========== MY SUBSCRIPTION ========== -->
+  <template id="tpl-my-subscription">
+    <div class="pulse-page">
+      <header class="pulse-page-header">
+        <button type="button" class="pulse-icon-btn" data-action="back" aria-label="بازگشت"></button>
+        <h1 class="pulse-page-header__title">اشتراک من</h1>
+      </header>
+
+      <div data-slot="content"></div>
+    </div>
+  </template>
+
+  <template id="tpl-my-sub-empty">
+    <div class="pulse-page-section">
+      <div class="pulse-card">
+        <div class="pulse-empty">
+          <div class="pulse-empty__icon" data-icon="shield"></div>
+          <div class="pulse-empty__title">اشتراک فعالی نداری</div>
+          <div class="pulse-empty__text">برای استفاده از سرویس، یکی از پلن‌های موجود را خریداری کن.</div>
+          <button type="button" class="pulse-btn pulse-btn--primary" data-action="buy">خرید اشتراک</button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-my-sub-active">
+    <div class="pulse-page-section">
+      <div class="pulse-card">
+        <div class="pulse-home-sub__header">
+          <div class="pulse-home-sub__title">اشتراک فعال</div>
+          <span class="pulse-chip pulse-chip--active">
+            <span class="pulse-chip__dot"></span>
+            <span>فعال</span>
+          </span>
+        </div>
+
+        <div class="pulse-sub-detail-row">
+          <span class="pulse-sub-detail-row__label">نوع اتصال</span>
+          <span class="pulse-sub-detail-row__value" data-bind="connectionType"></span>
+        </div>
+
+        <div class="pulse-sub-detail-row">
+          <span class="pulse-sub-detail-row__label">مدت</span>
+          <span class="pulse-sub-detail-row__value" data-bind="duration"></span>
+        </div>
+
+        <div class="pulse-sub-detail-row" data-row="volumeRow">
+          <span class="pulse-sub-detail-row__label">حجم کل</span>
+          <span class="pulse-sub-detail-row__value pulse-num" data-bind="volume"></span>
+        </div>
+
+        <div class="pulse-sub-detail-row" data-row="usageRow">
+          <span class="pulse-sub-detail-row__label">مصرف‌شده</span>
+          <span class="pulse-sub-detail-row__value pulse-num" data-bind="usage"></span>
+        </div>
+
+        <div data-row="progressRow">
+          <div class="pulse-progress">
+            <div class="pulse-progress__fill" data-bind="usageBar"></div>
+          </div>
+        </div>
+
+        <div class="pulse-sub-detail-row">
+          <span class="pulse-sub-detail-row__label">تاریخ انقضا</span>
+          <span class="pulse-sub-detail-row__value pulse-num" data-bind="expiresAt"></span>
+        </div>
+
+        <div class="pulse-sub-detail-row">
+          <span class="pulse-sub-detail-row__label">زمان باقی‌مانده</span>
+          <span class="pulse-sub-detail-row__value pulse-num" data-bind="daysLeft"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pulse-page-section">
+      <div class="pulse-section-label">لینک اشتراک</div>
+      <div class="pulse-config-box">
+        <div class="pulse-config-box__value pulse-num" data-bind="configLink"></div>
+        <div class="pulse-config-box__actions">
+          <button type="button" class="pulse-btn pulse-btn--secondary pulse-btn--sm" data-action="copy-config">
+            <span data-icon="copy" class="shrink-0"></span>
+            <span>کپی</span>
+          </button>
+          <button type="button" class="pulse-btn pulse-btn--primary pulse-btn--sm" data-action="redownload">
+            <span data-icon="download" class="shrink-0"></span>
+            <span>دریافت مجدد</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- ========== MY PURCHASES ========== -->
+  <template id="tpl-my-purchases">
+    <div class="pulse-page">
+      <header class="pulse-page-header">
+        <button type="button" class="pulse-icon-btn" data-action="back" aria-label="بازگشت"></button>
+        <h1 class="pulse-page-header__title">خریدهای من</h1>
+      </header>
+
+      <div data-slot="content"></div>
+    </div>
+  </template>
+
+  <template id="tpl-purchases-empty">
+    <div class="pulse-page-section">
+      <div class="pulse-card">
+        <div class="pulse-empty">
+          <div class="pulse-empty__icon" data-icon="package"></div>
+          <div class="pulse-empty__title">هنوز خریدی ثبت نشده</div>
+          <div class="pulse-empty__text">پس از خرید اولین اشتراک، سفارش‌های شما اینجا نمایش داده می‌شود.</div>
+          <button type="button" class="pulse-btn pulse-btn--primary" data-action="buy">خرید اشتراک</button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-purchases-list">
+    <div class="pulse-page-row" data-slot="orders"></div>
+  </template>
+
+  <template id="tpl-order-card">
+    <button type="button" class="pulse-order-card">
+      <div class="pulse-order-card__top">
+        <div class="pulse-order-card__id pulse-num" data-bind="orderId"></div>
+        <span class="pulse-chip" data-bind="statusChip"></span>
+      </div>
+
+      <div class="pulse-order-card__body">
+        <div class="pulse-order-card__volume" data-bind="volume"></div>
+        <div class="pulse-order-card__meta" data-bind="meta"></div>
+      </div>
+
+      <div class="pulse-order-card__bottom">
+        <div class="pulse-order-card__date" data-bind="date"></div>
+        <div class="pulse-order-card__price pulse-num" data-bind="price"></div>
+      </div>
+    </button>
   </template>
 
   <!-- ========== PLACEHOLDER ========== -->

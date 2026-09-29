@@ -595,3 +595,116 @@
 .pulse-result--error   .pulse-result__icon { background: var(--c-error-soft);   color: var(--c-error); }
 .pulse-result--warning .pulse-result__icon { background: var(--c-warning-soft); color: var(--c-warning); }
 .pulse-result--neutral .pulse-result__icon { background: rgba(148, 163, 184, 0.14); color: var(--c-text-muted); }
+
+/* ---------- My Subscription: detail rows ---------- */
+.pulse-sub-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sp-2) 0;
+  font-size: var(--fs-caption);
+}
+
+.pulse-sub-detail-row:not(:last-child) {
+  border-bottom: 1px solid var(--c-border);
+}
+
+.pulse-sub-detail-row__label { color: var(--c-text-muted); }
+.pulse-sub-detail-row__value { font-weight: 600; }
+
+/* ---------- My Subscription: config box ---------- */
+.pulse-config-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+}
+
+.pulse-config-box__value {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  word-break: break-all;
+  padding: var(--sp-3);
+  background: var(--c-surface-2);
+  border-radius: var(--r-md);
+  color: var(--c-text-muted);
+}
+
+.pulse-config-box__actions {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.pulse-config-box__actions > * { flex: 1; }
+
+/* ---------- My Purchases: order card ---------- */
+.pulse-order-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: var(--sp-4);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  text-align: right;
+  transition:
+    border-color var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out);
+}
+
+.pulse-order-card:hover {
+  border-color: var(--c-border-strong);
+  background: var(--c-surface-2);
+}
+
+.pulse-order-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pulse-order-card__id {
+  font-size: var(--fs-small);
+  color: var(--c-text-dim);
+  font-weight: 600;
+}
+
+.pulse-order-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pulse-order-card__volume {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.pulse-order-card__meta {
+  font-size: var(--fs-small);
+  color: var(--c-text-muted);
+}
+
+.pulse-order-card__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--c-border);
+}
+
+.pulse-order-card__date {
+  font-size: var(--fs-small);
+  color: var(--c-text-dim);
+}
+
+.pulse-order-card__price {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-accent);
+}
