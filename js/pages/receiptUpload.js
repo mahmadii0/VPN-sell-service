@@ -8,7 +8,7 @@ import { iconNode } from '../components/icons.js';
 import { toast } from '../components/ui.js';
 import { upload } from '../api/client.js';
 import { ENDPOINTS } from '../api/endpoints.js';
-import { acquireLock, releaseLock } from '../utils/validate.js';
+import { acquireLock, releaseLock, hasValidImageSignature } from '../utils/validate.js';
 
 const MAX_INPUT_SIZE = 5 * 1024 * 1024;
 
@@ -78,6 +78,14 @@ async function handleFileChange(root, input) {
 
   if (file.size > MAX_INPUT_SIZE) {
     toast('حجم تصویر باید کمتر از ۵ مگابایت باشد', { variant: 'error' });
+    input.value = '';
+    return;
+  }
+
+  // Magic-byte check: verifies real image content, not just a claimed MIME.
+  const valid = await hasValidImageSignature(file);
+  if (!valid) {
+    toast('فایل انتخابی یک تصویر معتبر نیست', { variant: 'error' });
     input.value = '';
     return;
   }

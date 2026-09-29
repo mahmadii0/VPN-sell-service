@@ -74,3 +74,28 @@ export async function copyToClipboard(text) {
     return false;
   }
 }
+
+// Debounce helper for high-frequency events.
+export function debounce(fn, wait = 200) {
+  let timer = null;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), wait);
+  };
+}
+
+// Allow only safe protocols (prevents javascript:, data:, etc.).
+const SAFE_PROTOCOLS = new Set([
+  'http:', 'https:',
+  'vless:', 'vmess:', 'trojan:', 'ss:', 'ssr:', 'wireguard:'
+]);
+
+export function isSafeUrl(url) {
+  if (typeof url !== 'string' || !url.length) return false;
+  try {
+    const u = new URL(url, window.location.origin);
+    return SAFE_PROTOCOLS.has(u.protocol);
+  } catch {
+    return false;
+  }
+}

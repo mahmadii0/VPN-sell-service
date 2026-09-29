@@ -6,6 +6,7 @@ import { formatNumber, formatPrice, formatDate } from '../utils/format.js';
 import { iconNode } from '../components/icons.js';
 import { toast } from '../components/ui.js';
 import { copyToClipboard } from '../utils/dom.js';
+import { isValidId } from '../utils/validate.js';
 
 const CONNECTION_LABEL = Object.freeze({
   normal: 'عادی',
@@ -33,8 +34,7 @@ export function renderOrderDetail({ params } = {}) {
   fillStaticIcons(root);
   bindActions(root);
 
-  const orderId = params?.orderId;
-  const order = findOrder(orderId);
+  const order = findOrder(params?.orderId);
 
   const slot = root.querySelector('[data-slot="content"]');
   slot.innerHTML = '';
@@ -73,14 +73,14 @@ function bindActions(root, order) {
     const action = trigger.getAttribute('data-action');
 
     if (action === 'back') back();
-    else if (action === 'copy-config' && order) await copyConfig(root, order);
+    else if (action === 'copy-config' && order) await copyConfig(root);
   });
 }
 
 function findOrder(orderId) {
-  const id = String(orderId ?? '');
+  if (!isValidId(String(orderId ?? ''))) return null;
   const orders = getState().orders ?? [];
-  return orders.find((o) => String(o.id) === id) ?? null;
+  return orders.find((o) => String(o.id) === String(orderId).trim()) ?? null;
 }
 
 function fillOrder(root, order) {
@@ -91,7 +91,6 @@ function fillOrder(root, order) {
   setText(root, 'volume', order.unlimited ? 'نامحدود' : `${formatNumber(order.volume)} گیگابایت`);
   setText(root, 'price', formatPrice(order.price));
 
-  // Status chip
   const status = STATUS_MAP[order.status] || { label: '—', variant: 'neutral' };
   const chip = root.querySelector('[data-bind="statusChip"]');
   if (chip) {
@@ -99,14 +98,12 @@ function fillOrder(root, order) {
     chip.innerHTML = `<span class="pulse-chip__dot"></span><span>${status.label}</span>`;
   }
 
-  // Payment method
   if (order.paymentMethod) {
     setText(root, 'paymentMethod', PAYMENT_METHOD_LABEL[order.paymentMethod] || '—');
   } else {
     hideRow(root, 'methodRow');
   }
 
-  // Config link (only for paid orders with a config)
   const hasConfig = order.status === 'paid' && order.configLink;
   if (hasConfig) {
     setText(root, 'configLink', order.configLink);
@@ -114,14 +111,13 @@ function fillOrder(root, order) {
     hideRow(root, 'configSection');
   }
 
-  // Admin note (only for rejected / failed)
   if (order.adminNote && (order.status === 'failed' || order.status === 'cancelled')) {
     setText(root, 'adminNote', order.adminNote);
     showRow(root, 'adminNoteSection');
   }
 }
 
-async function copyConfig(root, order) {
+async function copyConfig(root) {
   const link = root.querySelector('[data-bind="configLink"]')?.textContent?.trim();
   if (!link) {
     toast('لینک اشتراک در دسترس نیست', { variant: 'warning' });

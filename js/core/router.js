@@ -5,6 +5,9 @@ const registry = new Map();
 let mountNode = null;
 let currentCleanup = null;
 let pendingParams = null;
+let lastNavigationAt = 0;
+
+const NAV_THROTTLE_MS = 180;
 
 export function register(id, renderFn) {
   registry.set(id, renderFn);
@@ -55,6 +58,11 @@ export function navigate(id, params = null) {
     return;
   }
 
+  // Throttle: prevents double-tap flicker and rapid unintended navigation.
+  const now = performance.now();
+  if (now - lastNavigationAt < NAV_THROTTLE_MS) return;
+  lastNavigationAt = now;
+
   const targetHash = `#/${id}`;
 
   if (window.location.hash === targetHash) {
@@ -71,6 +79,7 @@ export function back() {
     navigate('home');
     return;
   }
+  lastNavigationAt = 0;
   window.history.back();
 }
 

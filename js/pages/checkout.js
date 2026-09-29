@@ -1,4 +1,4 @@
-import { SCREENS, CARD_ACCOUNTS, PAYMENT_METHOD } from '../core/constants.js';
+import { SCREENS, CARD_ACCOUNTS, PAYMENT_METHOD, LOCK_KEYS } from '../core/constants.js';
 import { getState, setState } from '../state/store.js';
 import { navigate, back } from '../core/router.js';
 import { useTemplate } from '../core/template.js';
@@ -6,6 +6,7 @@ import { formatNumber, formatPrice } from '../utils/format.js';
 import { iconNode } from '../components/icons.js';
 import { toast } from '../components/ui.js';
 import { copyToClipboard } from '../utils/dom.js';
+import { acquireLock, releaseLock } from '../utils/validate.js';
 
 const TYPE_LABEL = Object.freeze({
   normal: 'عادی',
@@ -125,7 +126,6 @@ function bindActions(root, plan) {
       }
       setState({ paymentMethod: method });
       syncMethodUI(root, method);
-      syncCardsVisibility(root, method);
       return;
     }
 
@@ -159,15 +159,21 @@ function syncCardsVisibility(root, method) {
 }
 
 function handlePay(root, plan) {
+  if (!acquireLock(LOCK_KEYS.PAYMENT)) return;
+
   const method = getState().paymentMethod ?? PAYMENT_METHOD.CARD_TO_CARD;
 
   if (method === PAYMENT_METHOD.WALLET) {
     toast('اتصال به درگاه کیف پول به‌زودی فعال می‌شود', { variant: 'info' });
+    releaseLock(LOCK_KEYS.PAYMENT);
     return;
   }
 
   setState({ selectedPlan: plan, paymentMethod: PAYMENT_METHOD.CARD_TO_CARD });
   navigate(SCREENS.RECEIPT_UPLOAD, { plan });
+
+  // Release shortly after navigation begins.
+  setTimeout(() => releaseLock(LOCK_KEYS.PAYMENT), 400);
 }
 
 function setText(root, key, value) {
