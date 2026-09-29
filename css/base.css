@@ -1,6 +1,14 @@
+/* =========================================================
+   PULSE VPN — Base Layer
+   Reset + Fonts + Body + App Container + Splash
+   ========================================================= */
 
-   /* PULSE VPN — Base Layer */
+@layer reset, base, components, utilities;
 
+/* ============================================================
+   FONT FACES
+   IRANSansX: local only. Silent fallback to Vazirmatn.
+   ============================================================ */
 @layer base {
   @font-face {
     font-family: 'IRANSansX';
@@ -28,7 +36,9 @@
   }
 }
 
-
+/* ============================================================
+   RESET
+   ============================================================ */
 @layer reset {
   *,
   *::before,
@@ -42,6 +52,7 @@
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
     text-size-adjust: 100%;
+    overflow-x: hidden;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -51,6 +62,7 @@
   body {
     margin: 0;
     min-height: 100dvh;
+    min-height: 100vh;
     font-family: var(--font-sans);
     font-size: var(--fs-body);
     line-height: var(--lh-body);
@@ -61,6 +73,7 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
+    overscroll-behavior-y: none;
   }
 
   h1, h2, h3, h4, h5, h6,
@@ -74,10 +87,7 @@
     list-style: none;
   }
 
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
+  a { color: inherit; text-decoration: none; }
 
   img, svg, video, canvas {
     display: block;
@@ -100,13 +110,16 @@
   button {
     cursor: pointer;
     user-select: none;
+    -webkit-user-select: none;
   }
 
   [hidden] { display: none !important; }
 }
 
+/* ============================================================
+   BASE ELEMENTS
+   ============================================================ */
 @layer base {
-  
   :focus { outline: none; }
   :focus-visible {
     outline: 2px solid var(--c-primary);
@@ -119,27 +132,52 @@
     color: var(--c-text-on-primary);
   }
 
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
     background: var(--c-border-strong);
     border-radius: var(--r-full);
   }
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--c-text-dim);
-  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--c-text-dim); }
 
+  /* ---------- App Container ----------
+     Mobile: fills the viewport.
+     Tablet/Desktop: centered panel with a darker backdrop behind.
+     ------------------------------------ */
   .pulse-app {
+    position: relative;
     width: 100%;
     max-width: var(--container-max);
-    margin-inline: auto;
     min-height: 100dvh;
+    min-height: 100vh;
+    margin-inline: auto;
+    background: var(--c-bg);
     padding-bottom: var(--safe-bottom);
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
   }
 
+  /* Tablet and above: darker outer background + subtle border/shadow */
+  @media (min-width: 768px) {
+    body {
+      background: var(--c-bg-outer);
+    }
+
+    .pulse-app {
+      border-left: 1px solid var(--c-border);
+      border-right: 1px solid var(--c-border);
+      box-shadow: 0 0 80px rgba(0, 0, 0, 0.55);
+    }
+  }
+
+  /* Desktop: slightly taller shadow + border for panel look */
+  @media (min-width: 1024px) {
+    .pulse-app {
+      box-shadow: 0 0 100px rgba(0, 0, 0, 0.65);
+    }
+  }
+
+  /* ---------- Numeric formatting ---------- */
   .pulse-num {
     font-variant-numeric: tabular-nums;
     font-feature-settings: 'tnum';
@@ -148,46 +186,7 @@
     display: inline-block;
   }
 
-  .pulse-boot {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100dvh;
-    padding: var(--sp-8) var(--sp-5);
-    text-align: center;
-    gap: var(--sp-3);
-  }
-  .pulse-boot__logo {
-    width: 160px;
-    height: 160px;
-    border-radius: var(--r-xl);
-    overflow: hidden;
-    box-shadow: var(--sh-lg);
-    margin-bottom: var(--sp-4);
-  }
-  .pulse-boot__logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .pulse-boot__title {
-    font-size: var(--fs-h1);
-    font-weight: var(--fw-h1);
-    line-height: var(--lh-h1);
-    margin: 0;
-  }
-  .pulse-boot__tagline {
-    font-size: var(--fs-body);
-    color: var(--c-text-muted);
-    margin: 0;
-  }
-  .pulse-boot__meta {
-    font-size: var(--fs-small);
-    color: var(--c-text-dim);
-    margin-top: var(--sp-6);
-  }
-
+  /* ---------- Noscript ---------- */
   .pulse-noscript {
     position: fixed;
     inset: 0;
@@ -200,5 +199,95 @@
     text-align: center;
     font-size: var(--fs-body);
     z-index: var(--z-max);
+  }
+
+  /* ---------- Splash ---------- */
+  .pulse-splash {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: var(--container-max);
+    height: 100dvh;
+    height: 100vh;
+    z-index: 9998;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-4);
+    background: var(--c-bg);
+    transition:
+      opacity var(--dur-slow) var(--ease-out),
+      visibility var(--dur-slow) var(--ease-out);
+  }
+
+  .pulse-splash.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .pulse-splash__logo {
+    width: 120px;
+    height: 120px;
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    box-shadow: var(--sh-lg);
+  }
+
+  .pulse-splash__logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .pulse-splash__name {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    background: var(--grad-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .pulse-splash__spinner {
+    width: 24px;
+    height: 24px;
+    margin-top: var(--sp-2);
+    border: 2.5px solid rgba(99, 102, 241, 0.2);
+    border-top-color: var(--c-primary);
+    border-radius: 50%;
+    animation: pulse-spin 800ms linear infinite;
+  }
+
+  @media (max-width: 375px) {
+    .pulse-splash__logo {
+      width: 100px;
+      height: 100px;
+    }
+    .pulse-splash__name {
+      font-size: 20px;
+    }
+  }
+
+  /* Landscape on small devices */
+  @media (max-height: 480px) and (orientation: landscape) {
+    .pulse-splash {
+      flex-direction: row;
+      gap: var(--sp-6);
+    }
+    .pulse-splash__logo {
+      width: 80px;
+      height: 80px;
+    }
+    .pulse-splash__name {
+      font-size: 18px;
+    }
+    .pulse-splash__spinner {
+      display: none;
+    }
   }
 }

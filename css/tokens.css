@@ -1,7 +1,11 @@
-/* PULSE VPN — Design Tokens */
+/* =========================================================
+   PULSE VPN — Design Tokens
+   ========================================================= */
 
 :root {
-  
+  /* ============================================================
+     COLOR — Brand
+     ============================================================ */
   --c-primary:         #6366F1;
   --c-primary-hover:   #7C7EF5;
   --c-primary-active:  #4F52D9;
@@ -16,6 +20,9 @@
   --c-accent-hover:    #67E8F9;
   --c-accent-soft:     rgba(34, 211, 238, 0.12);
 
+  /* ============================================================
+     COLOR — Semantic
+     ============================================================ */
   --c-success:      #10B981;
   --c-success-soft: rgba(16, 185, 129, 0.14);
   --c-warning:      #F59E0B;
@@ -25,8 +32,12 @@
   --c-info:         #22D3EE;
   --c-info-soft:    rgba(34, 211, 238, 0.14);
 
+  /* ============================================================
+     COLOR — Surfaces
+     ============================================================ */
   --c-bg:             #081220;
   --c-bg-elev:        #0C1929;
+  --c-bg-outer:       #040914;
   --c-surface:        #111827;
   --c-surface-2:      #1A2332;
   --c-surface-3:      #232E42;
@@ -34,17 +45,26 @@
   --c-border-strong:  rgba(148, 163, 184, 0.22);
   --c-overlay:        rgba(0, 0, 0, 0.55);
 
-  --c-text:           #F8FAFC;
-  --c-text-muted:     #94A3B8;
-  --c-text-dim:       #64748B;
-  --c-text-inverse:   #081220;
+  /* ============================================================
+     COLOR — Text
+     ============================================================ */
+  --c-text:            #F8FAFC;
+  --c-text-muted:      #94A3B8;
+  --c-text-dim:        #64748B;
+  --c-text-inverse:    #081220;
   --c-text-on-primary: #FFFFFF;
 
+  /* ============================================================
+     GRADIENTS
+     ============================================================ */
   --grad-brand:   linear-gradient(135deg, #22D3EE 0%, #6366F1 100%);
   --grad-primary: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
   --grad-accent:  linear-gradient(135deg, #22D3EE 0%, #3B82F6 100%);
   --grad-text:    linear-gradient(90deg, #8B5CF6 0%, #22D3EE 100%);
 
+  /* ============================================================
+     TYPOGRAPHY
+     ============================================================ */
   --font-sans: 'IRANSansX', 'Vazirmatn', Tahoma, 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
@@ -57,6 +77,9 @@
   --fs-btn:     16px;  --fw-btn:     600;
   --fs-micro:   11px;
 
+  /* ============================================================
+     SPACING — 4px base scale
+     ============================================================ */
   --sp-0:  0;
   --sp-1:  4px;
   --sp-2:  8px;
@@ -69,35 +92,53 @@
   --sp-12: 48px;
   --sp-16: 64px;
 
+  /* ============================================================
+     RADIUS
+     ============================================================ */
   --r-xs:   6px;
   --r-sm:   10px;
   --r-md:   14px;
   --r-lg:   18px;
   --r-xl:   24px;
+  --r-2xl:  28px;
   --r-full: 9999px;
 
+  /* ============================================================
+     SHADOWS
+     ============================================================ */
   --sh-sm:   0 1px 2px rgba(0, 0, 0, 0.25);
   --sh-md:   0 4px 14px rgba(0, 0, 0, 0.30);
   --sh-lg:   0 10px 30px rgba(0, 0, 0, 0.40);
   --sh-xl:   0 20px 50px rgba(0, 0, 0, 0.55);
+  --sh-2xl:  0 30px 100px rgba(0, 0, 0, 0.70);
   --sh-glow: 0 0 24px var(--c-primary-glow);
 
+  /* ============================================================
+     MOTION
+     ============================================================ */
   --dur-instant: 80ms;
   --dur-fast:    120ms;
   --dur-base:    200ms;
   --dur-slow:    320ms;
   --dur-slower:  480ms;
 
-  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in:    cubic-bezier(0.7, 0, 0.84, 0);
-  --ease-inout: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-inout:  cubic-bezier(0.4, 0, 0.2, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
+  /* ============================================================
+     BLUR
+     ============================================================ */
   --blur-sm: 4px;
   --blur-md: 14px;
   --blur-lg: 20px;
 
-  --container-max: 480px;
+  /* ============================================================
+     LAYOUT — Container width scales with viewport
+     Mobile: full width. Tablet: 640px. Desktop: 440px (like Telegram panel).
+     ============================================================ */
+  --container-max: 100%;
   --navbar-h:      56px;
   --bottom-nav-h:  64px;
 
@@ -106,15 +147,71 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left:   env(safe-area-inset-left, 0px);
 
-  --z-base:    1;
-  --z-navbar:  100;
-  --z-bottom:  100;
-  --z-sheet:   500;
-  --z-modal:   600;
-  --z-toast:   700;
-  --z-max:     9999;
+  /* ============================================================
+     Z-INDEX
+     ============================================================ */
+  --z-base:   1;
+  --z-navbar: 100;
+  --z-bottom: 100;
+  --z-sheet:  500;
+  --z-modal:  600;
+  --z-toast:  700;
+  --z-max:    9999;
 }
 
+/* ============================================================
+   RESPONSIVE TYPOGRAPHY
+   ============================================================ */
+
+/* Standard mobile (< 480px) */
+@media (max-width: 480px) {
+  :root {
+    --fs-h1:      26px;
+    --fs-h2:      19px;
+    --fs-h3:      17px;
+    --fs-body:    16px;
+    --fs-caption: 14px;
+  }
+}
+
+/* Small mobile (<= 375px) — iPhone SE, small Androids */
+@media (max-width: 375px) {
+  :root {
+    --fs-h1:      24px;
+    --fs-h2:      18px;
+    --fs-h3:      16px;
+    --fs-body:    15px;
+    --fs-caption: 13px;
+    --fs-small:   11px;
+  }
+}
+
+/* Very small mobile (<= 340px) — legacy phones */
+@media (max-width: 340px) {
+  :root {
+    --fs-h1:      22px;
+    --fs-h2:      17px;
+    --fs-h3:      15px;
+    --fs-body:    14px;
+    --fs-caption: 12px;
+  }
+}
+
+/* Tablet (>= 768px) */
+@media (min-width: 768px) {
+  :root {
+    --container-max: 640px;
+  }
+}
+
+/* Desktop (>= 1024px) */
+@media (min-width: 1024px) {
+  :root {
+    --container-max: 440px;
+  }
+}
+
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   :root {
     --dur-instant: 1ms;
