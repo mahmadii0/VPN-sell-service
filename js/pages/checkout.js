@@ -7,6 +7,7 @@ import { iconNode } from '../components/icons.js';
 import { toast } from '../components/ui.js';
 import { copyToClipboard } from '../utils/dom.js';
 import { acquireLock, releaseLock } from '../utils/validate.js';
+import * as haptic from '../utils/haptic.js';
 
 const TYPE_LABEL = Object.freeze({
   normal: 'عادی',
@@ -106,6 +107,7 @@ function bindActions(root, plan) {
   root.addEventListener('click', async (e) => {
     const copyBtn = e.target.closest('[data-action="copy-card"]');
     if (copyBtn) {
+      haptic.tap();
       const cardEl = copyBtn.closest('[data-card-id]');
       const raw = cardEl?.querySelector('[data-bind="number"]')?.dataset.raw;
       if (!raw) return;
@@ -121,9 +123,11 @@ function bindActions(root, plan) {
       const method = methodBtn.dataset.method;
       const walletAvailable = root.dataset.walletAvailable === '1';
       if (method === PAYMENT_METHOD.WALLET && !walletAvailable) {
+        haptic.warn();
         toast('موجودی کیف پول کافی نیست', { variant: 'warning' });
         return;
       }
+      haptic.select();
       setState({ paymentMethod: method });
       syncMethodUI(root, method);
       return;
@@ -161,6 +165,7 @@ function syncCardsVisibility(root, method) {
 function handlePay(root, plan) {
   if (!acquireLock(LOCK_KEYS.PAYMENT)) return;
 
+  haptic.tap();
   const method = getState().paymentMethod ?? PAYMENT_METHOD.CARD_TO_CARD;
 
   if (method === PAYMENT_METHOD.WALLET) {
@@ -172,7 +177,6 @@ function handlePay(root, plan) {
   setState({ selectedPlan: plan, paymentMethod: PAYMENT_METHOD.CARD_TO_CARD });
   navigate(SCREENS.RECEIPT_UPLOAD, { plan });
 
-  // Release shortly after navigation begins.
   setTimeout(() => releaseLock(LOCK_KEYS.PAYMENT), 400);
 }
 

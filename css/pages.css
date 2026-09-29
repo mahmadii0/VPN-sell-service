@@ -1027,3 +1027,39 @@
     max-width: var(--container-max);
   }
 }
+
+
+/* ---------- Support contact card ---------- */
+.pulse-support-card {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.pulse-support-card__icon {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-md);
+  background: var(--c-accent-soft);
+  color: var(--c-accent);
+  flex-shrink: 0;
+}
+
+.pulse-support-card__body { flex: 1; min-width: 0; }
+.pulse-support-card__label { font-size: var(--fs-micro); color: var(--c-text-muted); }
+.pulse-support-card__value {
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 2px;
+  color: var(--c-text);
+  direction: ltr;
+  text-align: right;
+}
+
+@media (max-width: 375px) {
+  .pulse-support-card__icon { width: 38px; height: 38px; }
+  .pulse-support-card__value { font-size: 14px; }
+}

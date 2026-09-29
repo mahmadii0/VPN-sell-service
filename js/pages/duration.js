@@ -4,6 +4,7 @@ import { navigate, back } from '../core/router.js';
 import { useTemplate } from '../core/template.js';
 import { getDurationOptions } from '../pricing/pricing.js';
 import { iconNode } from '../components/icons.js';
+import * as haptic from '../utils/haptic.js';
 
 export function renderDuration() {
   const frag = useTemplate('tpl-duration');
@@ -66,6 +67,7 @@ function renderDurationCards(root) {
 }
 
 function toggleDuration(root, duration) {
+  haptic.select();
   const { selectedDuration } = getState();
   const next = selectedDuration === duration ? null : duration;
   setState({
@@ -89,6 +91,7 @@ function syncSelection(root) {
 }
 
 function continueToConnectionType() {
+  haptic.tap();
   const { selectedDuration } = getState();
   if (!selectedDuration) return;
   navigate(SCREENS.CONNECTION_TYPE, { duration: selectedDuration });

@@ -1,7 +1,3 @@
-//  PULSE VPN — Application Configuration
-
-//  @type {Readonly<object>} 
-
 export const APP = Object.freeze({
   nameEn: 'PULSE VPN',
   nameFa: 'وی‌پی‌ان پالس',
@@ -10,11 +6,9 @@ export const APP = Object.freeze({
   phase: 1,
   locale: 'fa-IR',
   currency: 'تومان',
-  currencyShort: 'ت',
   direction: 'rtl'
 });
 
-/** Telegram SDK endpoints and helpers. */
 export const TELEGRAM = Object.freeze({
   sdkUrl: 'https://telegram.org/js/telegram-web-app.js',
   themeColors: Object.freeze({
@@ -23,6 +17,20 @@ export const TELEGRAM = Object.freeze({
   })
 });
 
+export const API = Object.freeze({
+  baseUrl: '',
+  timeout: 15000,
+  retry: Object.freeze({
+    attempts: 2,
+    delayMs: 400
+  })
+});
+
+// Official PULSE VPN support contact.
+export const SUPPORT = Object.freeze({
+  telegramId: 'supp_pulsevpn',
+  telegramUrl: 'https://t.me/supp_pulsevpn'
+});
 
 export function isTelegramEnvironment() {
   return Boolean(
@@ -31,18 +39,8 @@ export function isTelegramEnvironment() {
   );
 }
 
-
 export function isDev() {
   if (typeof window === 'undefined') return false;
   const host = window.location.hostname;
   return host === 'localhost' || host === '127.0.0.1' || host === '';
 }
-
-export const API = Object.freeze({
-  baseUrl: '',            // در دیپلوی پر می‌شود — خالی = Same Origin
-  timeout: 15000,
-  retry: Object.freeze({
-    attempts: 2,
-    delayMs: 400
-  })
-});

@@ -5,6 +5,7 @@ import { useTemplate } from '../core/template.js';
 import { getAllPlans } from '../pricing/pricing.js';
 import { formatNumber } from '../utils/format.js';
 import { iconNode } from '../components/icons.js';
+import * as haptic from '../utils/haptic.js';
 
 const POPULAR_IDS = Object.freeze({
   normal_1m: 'N-1M-50GB',
@@ -108,6 +109,7 @@ function renderPlanCards(root, plans, duration, connectionType) {
 }
 
 function togglePlan(root, plan) {
+  haptic.select();
   const { selectedPlan } = getState();
   const next = selectedPlan?.id === plan.id ? null : plan;
   setState({ selectedPlan: next });
@@ -126,6 +128,7 @@ function syncSelection(root) {
 }
 
 function continueToCheckout() {
+  haptic.tap();
   const { selectedPlan } = getState();
   if (!selectedPlan) return;
   navigate(SCREENS.CHECKOUT, { plan: selectedPlan });

@@ -1,5 +1,6 @@
 import { icon, iconNode } from './icons.js';
 import { el } from '../utils/dom.js';
+import * as haptic from '../utils/haptic.js';
 
 // ---------- Button ----------
 export function Button({
@@ -26,12 +27,15 @@ export function Button({
   });
 
   if (iconName) btn.appendChild(iconNode(iconName, { size: 18 }));
-  if (label) {
-    const span = el('span', {}, label);
-    btn.appendChild(span);
+  if (label) btn.appendChild(el('span', {}, label));
+
+  if (onClick) {
+    btn.addEventListener('click', (e) => {
+      haptic.tap();
+      onClick(e);
+    });
   }
 
-  if (onClick) btn.addEventListener('click', onClick);
   return btn;
 }
 
@@ -50,7 +54,7 @@ export function Card({
 
   const card = el('div', { class: classes.join(' ') }, children);
   if (onClick && interactive) {
-    card.addEventListener('click', onClick);
+    card.addEventListener('click', () => { haptic.tap(); onClick(); });
     card.setAttribute('role', 'button');
     card.tabIndex = 0;
   }
@@ -106,7 +110,16 @@ export function toast(message, { variant = 'info', duration = 3500 } = {}) {
   return remove;
 }
 
-// ---------- Modal ----------
+// ---------- Modal (with Focus Trap) ----------
+const FOCUSABLE_SELECTOR = [
+  'button:not([disabled])',
+  '[href]',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])'
+].join(',');
+
 export function Modal({
   title,
   body,
@@ -115,18 +128,24 @@ export function Modal({
   onConfirm = null,
   onCancel = null
 } = {}) {
+  const previousFocus = document.activeElement;
   const backdrop = el('div', { class: 'pulse-modal-backdrop', role: 'dialog', 'aria-modal': 'true' });
 
   const close = () => {
     backdrop.classList.remove('is-open');
+    document.removeEventListener('keydown', onKeydown);
     setTimeout(() => backdrop.remove(), 250);
     document.body.classList.remove('no-scroll');
+    if (previousFocus && typeof previousFocus.focus === 'function') {
+      try { previousFocus.focus(); } catch { /* noop */ }
+    }
   };
 
   const confirmBtn = Button({
     label: confirmLabel,
     variant: 'primary',
     onClick: () => {
+      haptic.confirm();
       if (onConfirm) onConfirm();
       close();
     }
@@ -148,13 +167,42 @@ export function Modal({
   ]);
 
   backdrop.appendChild(modal);
+
   backdrop.addEventListener('click', (e) => {
     if (e.target === backdrop) close();
   });
 
+  const onKeydown = (e) => {
+    if (e.key === 'Escape') { close(); return; }
+    if (e.key !== 'Tab') return;
+
+    const focusables = Array.from(backdrop.querySelectorAll(FOCUSABLE_SELECTOR));
+    if (!focusables.length) return;
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+
+    if (e.shiftKey && active === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  };
+
   document.body.appendChild(backdrop);
   document.body.classList.add('no-scroll');
-  requestAnimationFrame(() => backdrop.classList.add('is-open'));
+  document.addEventListener('keydown', onKeydown);
+
+  requestAnimationFrame(() => {
+    backdrop.classList.add('is-open');
+    const focusables = backdrop.querySelectorAll(FOCUSABLE_SELECTOR);
+    if (focusables.length) {
+      try { focusables[0].focus(); } catch { /* noop */ }
+    }
+  });
 
   return { close };
 }
@@ -166,10 +214,7 @@ export function BottomSheet({ title, content } = {}) {
   const close = () => {
     sheet.classList.remove('is-open');
     backdrop.classList.remove('is-open');
-    setTimeout(() => {
-      backdrop.remove();
-      sheet.remove();
-    }, 320);
+    setTimeout(() => { backdrop.remove(); sheet.remove(); }, 320);
     document.body.classList.remove('no-scroll');
   };
 

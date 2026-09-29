@@ -4,6 +4,7 @@ import { navigate, back } from '../core/router.js';
 import { useTemplate } from '../core/template.js';
 import { getConnectionOptions } from '../pricing/pricing.js';
 import { iconNode } from '../components/icons.js';
+import * as haptic from '../utils/haptic.js';
 
 export function renderConnectionType({ params } = {}) {
   const frag = useTemplate('tpl-connection-type');
@@ -69,6 +70,7 @@ function renderOptions(root) {
 }
 
 function toggleConnection(root, type) {
+  haptic.select();
   const { selectedConnectionType } = getState();
   const next = selectedConnectionType === type ? null : type;
   setState({
@@ -91,6 +93,7 @@ function syncSelection(root) {
 }
 
 function continueToPlans() {
+  haptic.tap();
   const { selectedDuration, selectedConnectionType } = getState();
   if (!selectedDuration || !selectedConnectionType) return;
   navigate(SCREENS.PLANS, {
