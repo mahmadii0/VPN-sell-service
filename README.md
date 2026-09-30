@@ -1,7 +1,7 @@
 # PULSE VPN shop
 
 The Go HTTP service serves the existing Telegram Mini App from `web/`, validates
-Telegram `initData` on every customer request, owns SQLite and the existing
+Telegram `initData` on every customer request, owns MySQL and the existing
 3x-ui client API, and validates receipt uploads. The Python `pyTelegramBotAPI`
 process handles Telegram polling, notifications and administrator commands.
 It uses a private HTTP token to call Go; Redis is not needed.
@@ -21,16 +21,9 @@ docker compose up --build -d
 docker compose ps
 ```
 
-On first startup, Compose copies the **existing** `shop.sqlite` and
-`receipts/` into the named `shop-data` volume. Later writes, including SQLite
-WAL files, remain in that volume across container recreation. The original
-files remain untouched; after import, back up the volume for production
-upgrades and do not delete it with `docker compose down -v`. Go applies new
-SQL migrations automatically and leaves old orders intact. Only the backend
-mounts the data and the read-only initial seed; the bot accesses receipts
-through authenticated internal HTTP.
-Stop any process writing the original SQLite database before its first import;
-checkpoint a pre-existing WAL file into the database first. Image builds need
+Compose starts a MySQL 8.4 container and the backend connects to it with
+`DB_DRIVER=mysql` and `DB_DSN=...`. Receipts are stored in a named volume and
+the bot accesses them through authenticated internal HTTP. Image builds need
 access to the Go module proxy and PyPI.
 
 ## Admin workflow

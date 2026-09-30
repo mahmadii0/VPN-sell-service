@@ -14,7 +14,6 @@ import (
 	"io/fs"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -55,7 +54,7 @@ func userID(r *http.Request) int64 { return r.Context().Value(userKey{}).(int64)
 func (a *API) routes() http.Handler {
 	m := http.NewServeMux()
 	m.HandleFunc("GET /api/shop", a.auth(func(w http.ResponseWriter, r *http.Request) {
-		jsonOut(w, 200, map[string]any{"packages": a.Config.Packages, "card_number": a.Config.CardNumber})
+		jsonOut(w, 200, map[string]any{"packages": a.Config.Packages, "card_number": a.Config.CardNumber, "subscription_base": a.Config.SubscriptionBase})
 	}))
 	m.HandleFunc("GET /api/me", a.auth(func(w http.ResponseWriter, r *http.Request) {
 		balance, e := a.Store.Balance(r.Context(), userID(r))
@@ -79,7 +78,13 @@ func (a *API) routes() http.Handler {
 	m.HandleFunc("GET /api/wallet/transactions", a.auth(a.walletTransactions))
 	a.internalRoutes(m)
 	static, _ := fs.Sub(webFiles, "web")
-	m.Handle("/", http.FileServer(http.FS(static)))
+	staticHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Expires", "0")
+		http.FileServer(http.FS(static)).ServeHTTP(w, r)
+	})
+	m.Handle("/", staticHandler)
 	return m
 }
 func (a *API) createOrder(w http.ResponseWriter, r *http.Request) {
@@ -221,8 +226,5 @@ func (a *API) walletTransactions(w http.ResponseWriter, r *http.Request) {
 	jsonOut(w, 200, map[string]any{"transactions": entries})
 }
 func ensureStorage(c Config) error {
-	if e := os.MkdirAll(filepath.Dir(c.DBPath), 0700); e != nil {
-		return e
-	}
 	return os.MkdirAll(c.ReceiptDir, 0700)
 }

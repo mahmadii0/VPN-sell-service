@@ -28,7 +28,9 @@ type Client struct {
 }
 
 func (p *Panel) get(ctx context.Context, path string, dest any) error {
-	req, e := http.NewRequestWithContext(ctx, "GET", p.Base+path, nil)
+	base := strings.TrimRight(p.Base, "/")
+	base = strings.TrimSuffix(base, "/panel")
+	req, e := http.NewRequestWithContext(ctx, "GET", base+path, nil)
 	if e != nil {
 		return e
 	}

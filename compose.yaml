@@ -1,9 +1,31 @@
 services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: pulse
+      MYSQL_USER: pulse
+      MYSQL_PASSWORD: pulsepass
+      MYSQL_ROOT_PASSWORD: rootpass
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-upulse", "-psecret-f564d0c9"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
   backend:
     build: .
+    depends_on:
+      mysql: 
+        condition: service_healthy
     environment:
       BOT_TOKEN: ${BOT_TOKEN:?set BOT_TOKEN}
       BOT_INTERNAL_TOKEN: ${BOT_INTERNAL_TOKEN:?set BOT_INTERNAL_TOKEN}
+      TELEGRAM_PROXY: ${TELEGRAM_PROXY}
       ADMIN_IDS: ${ADMIN_IDS:?set ADMIN_IDS}
       MINI_APP_URL: ${MINI_APP_URL:?set MINI_APP_URL}
       CARD_NUMBER: ${CARD_NUMBER:?set CARD_NUMBER}
@@ -11,20 +33,35 @@ services:
       PANEL_API_TOKEN: ${PANEL_API_TOKEN:?set PANEL_API_TOKEN}
       PANEL_SUBSCRIPTION_BASE_URL: ${PANEL_SUBSCRIPTION_BASE_URL:?set PANEL_SUBSCRIPTION_BASE_URL}
       PACKAGES_JSON: ${PACKAGES_JSON:?set PACKAGES_JSON}
-      DB_PATH: /data/shop.sqlite
-      RECEIPT_DIR: /data/receipts
+      DB_DRIVER: mysql
+      DB_DSN: pulse:pulsepass@tcp(mysql:3306)/pulse?charset=utf8mb4&collation=utf8mb4_unicode_ci&multiStatements=true&loc=UTC
+      RECEIPT_DIR: /app/receipts
       LISTEN_ADDR: :8080
     volumes:
-      - shop-data:/data
-      - ./shop.sqlite:/seed/shop.sqlite:ro
-      - ./receipts:/seed/receipts:ro
+      - shop-receipts:/app/receipts
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     restart: unless-stopped
+
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+    restart: unless-stopped
+
   bot:
     build: ./bot
     environment:
       BOT_TOKEN: ${BOT_TOKEN:?set BOT_TOKEN}
+      TELEGRAM_PROXY: ${TELEGRAM_PROXY}
       BOT_INTERNAL_TOKEN: ${BOT_INTERNAL_TOKEN:?set BOT_INTERNAL_TOKEN}
       ADMIN_IDS: ${ADMIN_IDS:?set ADMIN_IDS}
       MINI_APP_URL: ${MINI_APP_URL:?set MINI_APP_URL}
@@ -34,3 +71,7 @@ services:
     restart: unless-stopped
 volumes:
   shop-data:
+  caddy_data:
+  caddy_config:
+  mysql-data:
+  shop-receipts:

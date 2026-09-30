@@ -8,6 +8,7 @@ import time
 import requests
 import telebot
 from telebot import types
+from telebot import apihelper
 
 logging.basicConfig(level=logging.INFO)
 LOG = logging.getLogger("pulse-bot")
@@ -18,6 +19,14 @@ BACKEND = os.environ.get("BACKEND_URL", "http://backend:8080").rstrip("/")
 ADMINS = {int(value) for value in os.environ["ADMIN_IDS"].split(",") if value.strip()}
 if not ADMINS:
     raise RuntimeError("ADMIN_IDS must contain an administrator")
+
+proxy = os.getenv("TELEGRAM_PROXY")
+
+if proxy:
+    apihelper.proxy = {
+        "http": proxy,
+        "https": proxy,
+    }
 bot = telebot.TeleBot(TOKEN)
 
 
