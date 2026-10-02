@@ -18,7 +18,7 @@ func main() {
 	if e = ensureStorage(c); e != nil {
 		log.Fatal(e)
 	}
-	store, e := openStore(c.DBPath)
+	store, e := openStore(c.DBDriver, c.DBDSN)
 	if e != nil {
 		log.Fatal(e)
 	}

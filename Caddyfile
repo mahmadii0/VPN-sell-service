@@ -1,0 +1,3 @@
+mamad110.icu {
+    reverse_proxy backend:8080
+}

@@ -36,6 +36,60 @@ func TestDotEnv(t *testing.T) {
 	}
 }
 
+func TestPanelBaseDoesNotDoublePanelPath(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/panel/api/clients/list" {
+			t.Fatalf("unexpected panel path: %s", r.URL.Path)
+		}
+		fmt.Fprint(w, `{"success":true,"obj":[]}`)
+	}))
+	defer server.Close()
+
+	p := &Panel{Base: server.URL + "/panel", Token: "token", HTTP: server.Client()}
+	if _, err := p.List(context.Background()); err != nil {
+		t.Fatalf("panel list should succeed with /panel host base: %v", err)
+	}
+}
+
+func TestOrdersExposeAssignedLocalSubscriptionData(t *testing.T) {
+	s := testStore(t)
+	ctx := context.Background()
+	id, e := s.CreateOrder(ctx, 123, Package{ID: "p", Name: "P", PriceToman: 25000}, "receipt.png", "image/png")
+	if e != nil {
+		t.Fatal(e)
+	}
+	_, e = s.DB.ExecContext(ctx, "UPDATE orders SET status='approved', panel_client_id=?, panel_email=?, panel_inbound_id=?, panel_sub_id=? WHERE id=?", 10, "123alice", 3, "abc123", id)
+	if e != nil {
+		t.Fatal(e)
+	}
+	api := &API{Config: Config{BotToken: "secret", SubscriptionBase: "https://panel.example.com/sub/"}, Store: s}
+	request := httptest.NewRequest("GET", "/api/orders", nil)
+	request.Header.Set("X-Telegram-Init-Data", signedData("secret", 123, time.Now()))
+	w := httptest.NewRecorder()
+	api.routes().ServeHTTP(w, request)
+	if w.Code != http.StatusOK {
+		t.Fatalf("orders endpoint: %d %s", w.Code, w.Body.String())
+	}
+	body := w.Body.String()
+	if !strings.Contains(body, `"panel_sub_id":"abc123"`) || !strings.Contains(body, `"panel_email":"123alice"`) {
+		t.Fatalf("order metadata missing from local payload: %s", body)
+	}
+}
+
+func TestStaticAssetsAreNotCached(t *testing.T) {
+	api := &API{}
+	request := httptest.NewRequest("GET", "/js/app.js", nil)
+	w := httptest.NewRecorder()
+	api.routes().ServeHTTP(w, request)
+	if w.Code != http.StatusOK {
+		t.Fatalf("static asset request failed: %d %s", w.Code, w.Body.String())
+	}
+	cache := w.Header().Get("Cache-Control")
+	if !strings.Contains(cache, "no-store") {
+		t.Fatalf("static app assets must disable cache; got %q", cache)
+	}
+}
+
 func signedData(token string, user int64, t time.Time) string {
 	v := url.Values{}
 	v.Set("auth_date", fmt.Sprint(t.Unix()))
@@ -74,7 +128,7 @@ func TestInitData(t *testing.T) {
 }
 func testStore(t *testing.T) *Store {
 	t.Helper()
-	s, e := openStore(filepath.Join(t.TempDir(), "shop.db"))
+	s, e := openStore("sqlite", filepath.Join(t.TempDir(), "shop.db"))
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -107,6 +161,23 @@ func TestApprovalOnce(t *testing.T) {
 		t.Fatal("approved order rejected")
 	}
 }
+func TestCreateOrderDeduplicatesUserRecord(t *testing.T) {
+	s := testStore(t)
+	ctx := context.Background()
+	for i := 0; i < 2; i++ {
+		if _, e := s.CreateOrder(ctx, 555, Package{ID: "p", Name: "P", PriceToman: 100}, fmt.Sprintf("receipt-%d.png", i), "image/png"); e != nil {
+			t.Fatalf("create order %d: %v", i, e)
+		}
+	}
+	var n int
+	if e := s.DB.QueryRow("SELECT count(*) FROM users WHERE telegram_id=?", 555).Scan(&n); e != nil {
+		t.Fatal(e)
+	}
+	if n != 1 {
+		t.Fatalf("user row count=%d want 1", n)
+	}
+}
+
 func TestOwnership(t *testing.T) {
 	s := testStore(t)
 	id, e := s.CreateOrder(context.Background(), 123, Package{ID: "p", Name: "P", PriceToman: 100}, "private", "image/png")

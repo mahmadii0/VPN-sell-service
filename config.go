@@ -19,18 +19,18 @@ type Package struct {
 	PriceToman  int64  `json:"price_toman"`
 }
 type Config struct {
-	BotToken, BotInternalToken, MiniAppURL, CardNumber, PanelURL, PanelToken, SubscriptionBase, DBPath, ReceiptDir, Listen string
-	Admins                                                                                                                 map[int64]bool
-	Packages                                                                                                               []Package
+	BotToken, BotInternalToken, MiniAppURL, CardNumber, PanelURL, PanelToken, SubscriptionBase, DBDriver, DBDSN, ReceiptDir, Listen string
+	Admins                                                                                                                          map[int64]bool
+	Packages                                                                                                                        []Package
 }
 
 func loadConfig() (Config, error) {
 	if e := loadDotEnv(".env"); e != nil {
 		return Config{}, e
 	}
-	c := Config{BotToken: os.Getenv("BOT_TOKEN"), BotInternalToken: os.Getenv("BOT_INTERNAL_TOKEN"), MiniAppURL: os.Getenv("MINI_APP_URL"), CardNumber: os.Getenv("CARD_NUMBER"), PanelURL: strings.TrimRight(os.Getenv("PANEL_URL"), "/"), PanelToken: os.Getenv("PANEL_API_TOKEN"), SubscriptionBase: os.Getenv("PANEL_SUBSCRIPTION_BASE_URL"), DBPath: os.Getenv("DB_PATH"), ReceiptDir: os.Getenv("RECEIPT_DIR"), Listen: os.Getenv("LISTEN_ADDR"), Admins: map[int64]bool{}}
-	if c.DBPath == "" {
-		c.DBPath = "shop.sqlite"
+	c := Config{BotToken: os.Getenv("BOT_TOKEN"), BotInternalToken: os.Getenv("BOT_INTERNAL_TOKEN"), MiniAppURL: os.Getenv("MINI_APP_URL"), CardNumber: os.Getenv("CARD_NUMBER"), PanelURL: strings.TrimRight(os.Getenv("PANEL_URL"), "/"), PanelToken: os.Getenv("PANEL_API_TOKEN"), SubscriptionBase: os.Getenv("PANEL_SUBSCRIPTION_BASE_URL"), DBDriver: strings.TrimSpace(os.Getenv("DB_DRIVER")), DBDSN: os.Getenv("DB_DSN"), ReceiptDir: os.Getenv("RECEIPT_DIR"), Listen: os.Getenv("LISTEN_ADDR"), Admins: map[int64]bool{}}
+	if c.DBDriver == "" {
+		c.DBDriver = "mysql"
 	}
 	if c.ReceiptDir == "" {
 		c.ReceiptDir = "receipts"
@@ -50,7 +50,7 @@ func loadConfig() (Config, error) {
 		c.Admins[id] = true
 	}
 	var missing []string
-	for _, item := range []struct{ name, value string }{{"BOT_TOKEN", c.BotToken}, {"BOT_INTERNAL_TOKEN", c.BotInternalToken}, {"CARD_NUMBER", c.CardNumber}, {"PANEL_API_TOKEN", c.PanelToken}, {"ADMIN_IDS", os.Getenv("ADMIN_IDS")}, {"MINI_APP_URL", c.MiniAppURL}, {"PANEL_URL", c.PanelURL}, {"PANEL_SUBSCRIPTION_BASE_URL", c.SubscriptionBase}, {"PACKAGES_JSON", os.Getenv("PACKAGES_JSON")}} {
+	for _, item := range []struct{ name, value string }{{"BOT_TOKEN", c.BotToken}, {"BOT_INTERNAL_TOKEN", c.BotInternalToken}, {"CARD_NUMBER", c.CardNumber}, {"PANEL_API_TOKEN", c.PanelToken}, {"ADMIN_IDS", os.Getenv("ADMIN_IDS")}, {"MINI_APP_URL", c.MiniAppURL}, {"PANEL_URL", c.PanelURL}, {"PANEL_SUBSCRIPTION_BASE_URL", c.SubscriptionBase}, {"DB_DRIVER", c.DBDriver}, {"DB_DSN", c.DBDSN}, {"PACKAGES_JSON", os.Getenv("PACKAGES_JSON")}} {
 		if strings.TrimSpace(item.value) == "" {
 			missing = append(missing, item.name)
 		}
@@ -66,6 +66,9 @@ func loadConfig() (Config, error) {
 	}
 	if !strings.HasSuffix(c.SubscriptionBase, "/") {
 		return c, errors.New("PANEL_SUBSCRIPTION_BASE_URL must end in /")
+	}
+	if c.DBDriver != "mysql" && c.DBDriver != "sqlite" {
+		return c, fmt.Errorf("unsupported DB_DRIVER %q", c.DBDriver)
 	}
 	if e := json.Unmarshal([]byte(os.Getenv("PACKAGES_JSON")), &c.Packages); e != nil || len(c.Packages) == 0 {
 		return c, errors.New("PACKAGES_JSON must be a nonempty JSON array")

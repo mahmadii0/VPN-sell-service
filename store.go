@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"embed"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"path/filepath"
@@ -12,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql"
 	_ "modernc.org/sqlite"
 )
 
@@ -20,7 +22,10 @@ var migrations embed.FS
 
 var ErrConflict = errors.New("order is in an incompatible state")
 
-type Store struct{ DB *sql.DB }
+type Store struct {
+	DB     *sql.DB
+	Driver string
+}
 type Order struct {
 	ID                int64          `json:"id"`
 	UserID            int64          `json:"-"`
@@ -40,6 +45,61 @@ type Order struct {
 	NotificationError sql.NullString `json:"-"`
 }
 
+func (o Order) MarshalJSON() ([]byte, error) {
+	type orderJSON struct {
+		ID                int64  `json:"id"`
+		PackageID         string `json:"package_id"`
+		PackageName       string `json:"package_name"`
+		PriceToman        int64  `json:"price_toman"`
+		Status            string `json:"status"`
+		CreatedAt         string `json:"created_at"`
+		PanelClientID     any    `json:"panel_client_id,omitempty"`
+		PanelEmail        any    `json:"panel_email,omitempty"`
+		PanelInboundID    any    `json:"panel_inbound_id,omitempty"`
+		PanelSubID        any    `json:"panel_sub_id,omitempty"`
+		DeliveredAt       any    `json:"delivered_at,omitempty"`
+		DeliveryError     any    `json:"delivery_error,omitempty"`
+		NotificationError any    `json:"notification_error,omitempty"`
+	}
+	out := orderJSON{
+		ID:                o.ID,
+		PackageID:         o.PackageID,
+		PackageName:       o.PackageName,
+		PriceToman:        o.PriceToman,
+		Status:            o.Status,
+		CreatedAt:         o.CreatedAt,
+		PanelClientID:     nil,
+		PanelEmail:        nil,
+		PanelInboundID:    nil,
+		PanelSubID:        nil,
+		DeliveredAt:       nil,
+		DeliveryError:     nil,
+		NotificationError: nil,
+	}
+	if o.PanelClientID.Valid {
+		out.PanelClientID = o.PanelClientID.Int64
+	}
+	if o.PanelEmail.Valid {
+		out.PanelEmail = o.PanelEmail.String
+	}
+	if o.PanelInboundID.Valid {
+		out.PanelInboundID = o.PanelInboundID.Int64
+	}
+	if o.PanelSubID.Valid {
+		out.PanelSubID = o.PanelSubID.String
+	}
+	if o.DeliveredAt.Valid {
+		out.DeliveredAt = o.DeliveredAt.String
+	}
+	if o.DeliveryError.Valid {
+		out.DeliveryError = o.DeliveryError.String
+	}
+	if o.NotificationError.Valid {
+		out.NotificationError = o.NotificationError.String
+	}
+	return json.Marshal(out)
+}
+
 const orderColumns = `id,user_id,package_id,package_name,price_toman,receipt_path,receipt_mime,status,created_at,panel_client_id,panel_email,panel_inbound_id,panel_sub_id,delivered_at,delivery_error,notification_error`
 
 func scanOrder(row interface{ Scan(...any) error }) (Order, error) {
@@ -47,23 +107,111 @@ func scanOrder(row interface{ Scan(...any) error }) (Order, error) {
 	e := row.Scan(&o.ID, &o.UserID, &o.PackageID, &o.PackageName, &o.PriceToman, &o.ReceiptPath, &o.ReceiptMIME, &o.Status, &o.CreatedAt, &o.PanelClientID, &o.PanelEmail, &o.PanelInboundID, &o.PanelSubID, &o.DeliveredAt, &o.DeliveryError, &o.NotificationError)
 	return o, e
 }
-func openStore(path string) (*Store, error) {
-	db, e := sql.Open("sqlite", path)
+func openStore(driver, dsn string) (*Store, error) {
+	if driver == "" {
+		return nil, errors.New("database driver is required")
+	}
+	if dsn == "" {
+		return nil, errors.New("database DSN is required")
+	}
+	db, e := sql.Open(driver, dsn)
 	if e != nil {
 		return nil, e
 	}
-	db.SetMaxOpenConns(1)
-	for _, pragma := range []string{"PRAGMA foreign_keys=ON", "PRAGMA journal_mode=WAL", "PRAGMA busy_timeout=5000"} {
-		if _, e = db.Exec(pragma); e != nil {
+	switch driver {
+	case "sqlite", "modernc.org/sqlite":
+		db.SetMaxOpenConns(1)
+		for _, pragma := range []string{"PRAGMA foreign_keys=ON", "PRAGMA journal_mode=WAL", "PRAGMA busy_timeout=5000"} {
+			if _, e = db.Exec(pragma); e != nil {
+				db.Close()
+				return nil, e
+			}
+		}
+		if e = applyMigrations(db); e != nil {
 			db.Close()
 			return nil, e
 		}
-	}
-	if e = applyMigrations(db); e != nil {
+	case "mysql":
+		db.SetMaxOpenConns(10)
+		db.SetMaxIdleConns(10)
+		if e = applyMySQLSchema(db); e != nil {
+			db.Close()
+			return nil, e
+		}
+	default:
 		db.Close()
-		return nil, e
+		return nil, fmt.Errorf("unsupported database driver: %s", driver)
 	}
-	return &Store{db}, nil
+	return &Store{DB: db, Driver: driver}, nil
+}
+
+func applyMySQLSchema(db *sql.DB) error {
+	statements := []string{
+		`CREATE TABLE IF NOT EXISTS users (
+			telegram_id BIGINT PRIMARY KEY,
+			wallet_toman BIGINT NOT NULL DEFAULT 0
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+		`CREATE TABLE IF NOT EXISTS orders (
+			id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			user_id BIGINT NOT NULL,
+			package_id VARCHAR(64) NOT NULL,
+			package_name VARCHAR(255) NOT NULL,
+			price_toman BIGINT NOT NULL,
+			receipt_path TEXT NOT NULL,
+			receipt_mime VARCHAR(64) NOT NULL,
+			status VARCHAR(16) NOT NULL DEFAULT 'pending',
+			created_at VARCHAR(40) NOT NULL,
+			reviewed_at VARCHAR(40) NULL,
+			reviewed_by BIGINT NULL,
+			panel_client_id BIGINT NULL,
+			panel_email TEXT NULL,
+			panel_inbound_id BIGINT NULL,
+			panel_sub_id TEXT NULL,
+			assigned_at VARCHAR(40) NULL,
+			assigned_by BIGINT NULL,
+			delivered_at VARCHAR(40) NULL,
+			delivery_error TEXT NULL,
+			notification_error TEXT NULL,
+			KEY orders_user (user_id, id),
+			CONSTRAINT orders_user_fk FOREIGN KEY (user_id) REFERENCES users(telegram_id)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+		`CREATE TABLE IF NOT EXISTS wallet_ledger (
+			id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			user_id BIGINT NOT NULL,
+			order_id BIGINT NOT NULL,
+			amount_toman BIGINT NOT NULL,
+			created_at VARCHAR(40) NOT NULL,
+			UNIQUE KEY wallet_ledger_order (order_id),
+			CONSTRAINT wallet_ledger_user_fk FOREIGN KEY (user_id) REFERENCES users(telegram_id),
+			CONSTRAINT wallet_ledger_order_fk FOREIGN KEY (order_id) REFERENCES orders(id)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+		`CREATE TABLE IF NOT EXISTS match_candidates (
+			id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			order_id BIGINT NOT NULL,
+			panel_client_id BIGINT NOT NULL,
+			panel_email TEXT NOT NULL,
+			panel_inbound_id BIGINT NOT NULL,
+			panel_sub_id TEXT NOT NULL,
+			created_at VARCHAR(40) NOT NULL,
+			KEY match_candidates_order (order_id),
+			CONSTRAINT match_candidates_order_fk FOREIGN KEY (order_id) REFERENCES orders(id)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+		`CREATE TABLE IF NOT EXISTS bot_events (
+			id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			order_id BIGINT NOT NULL,
+			kind VARCHAR(16) NOT NULL,
+			created_at VARCHAR(40) NOT NULL,
+			delivered_at VARCHAR(40) NULL,
+			KEY bot_events_pending (delivered_at, id),
+			CONSTRAINT bot_events_order_fk FOREIGN KEY (order_id) REFERENCES orders(id)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+	}
+	for _, stmt := range statements {
+		if _, err := db.Exec(stmt); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 func applyMigrations(db *sql.DB) error {
 	if _, e := db.Exec("CREATE TABLE IF NOT EXISTS schema_migrations (version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL)"); e != nil {
@@ -112,13 +260,53 @@ func applyMigrations(db *sql.DB) error {
 	return nil
 }
 func utc() string { return time.Now().UTC().Format(time.RFC3339Nano) }
+func (s *Store) ensureUser(ctx context.Context, tx *sql.Tx, user int64) error {
+	switch s.Driver {
+	case "mysql":
+		_, e := tx.ExecContext(ctx, "INSERT IGNORE INTO users(telegram_id) VALUES(?)", user)
+		return e
+	case "sqlite", "modernc.org/sqlite":
+		_, e := tx.ExecContext(ctx, "INSERT OR IGNORE INTO users(telegram_id) VALUES(?)", user)
+		return e
+	default:
+		return fmt.Errorf("unsupported database driver: %s", s.Driver)
+	}
+}
+
+func (s *Store) ensureLedgerEntry(ctx context.Context, tx *sql.Tx, user, orderID int64) (bool, error) {
+	switch s.Driver {
+	case "mysql":
+		r, e := tx.ExecContext(ctx, "INSERT IGNORE INTO wallet_ledger(user_id,order_id,amount_toman,created_at) VALUES(?,?,10000,?)", user, orderID, utc())
+		if e != nil {
+			return false, e
+		}
+		n, e := r.RowsAffected()
+		if e != nil {
+			return false, e
+		}
+		return n == 1, nil
+	case "sqlite", "modernc.org/sqlite":
+		r, e := tx.ExecContext(ctx, "INSERT OR IGNORE INTO wallet_ledger(user_id,order_id,amount_toman,created_at) VALUES(?,?,10000,?)", user, orderID, utc())
+		if e != nil {
+			return false, e
+		}
+		n, e := r.RowsAffected()
+		if e != nil {
+			return false, e
+		}
+		return n == 1, nil
+	default:
+		return false, fmt.Errorf("unsupported database driver: %s", s.Driver)
+	}
+}
+
 func (s *Store) CreateOrder(ctx context.Context, user int64, p Package, path, mime string) (int64, error) {
 	tx, e := s.DB.BeginTx(ctx, nil)
 	if e != nil {
 		return 0, e
 	}
 	defer tx.Rollback()
-	if _, e = tx.ExecContext(ctx, "INSERT OR IGNORE INTO users(telegram_id) VALUES(?)", user); e != nil {
+	if e = s.ensureUser(ctx, tx, user); e != nil {
 		return 0, e
 	}
 	r, e := tx.ExecContext(ctx, "INSERT INTO orders(user_id,package_id,package_name,price_toman,receipt_path,receipt_mime,created_at) VALUES(?,?,?,?,?,?,?)", user, p.ID, p.Name, p.PriceToman, path, mime, utc())
@@ -203,15 +391,11 @@ func (s *Store) Approve(ctx context.Context, id, admin int64) (bool, error) {
 	if _, e = tx.ExecContext(ctx, "UPDATE orders SET status='approved',reviewed_at=?,reviewed_by=? WHERE id=?", utc(), admin, id); e != nil {
 		return false, e
 	}
-	r, e := tx.ExecContext(ctx, "INSERT OR IGNORE INTO wallet_ledger(user_id,order_id,amount_toman,created_at) VALUES(?,?,10000,?)", user, id, utc())
+	created, e := s.ensureLedgerEntry(ctx, tx, user, id)
 	if e != nil {
 		return false, e
 	}
-	n, e := r.RowsAffected()
-	if e != nil {
-		return false, e
-	}
-	if n != 1 {
+	if !created {
 		return false, fmt.Errorf("wallet ledger invariant failed for order %d", id)
 	}
 	if _, e = tx.ExecContext(ctx, "UPDATE users SET wallet_toman=wallet_toman+10000 WHERE telegram_id=?", user); e != nil {
