@@ -46,8 +46,8 @@ function bindActions(root) {
 
     if (action === 'back') back();
     else if (action === 'buy') navigate(SCREENS.DURATION);
-    else if (action === 'copy-config') await copyConfig(root);
-    else if (action === 'redownload') await refreshShop().then(() => { renderContent(root); return copyConfig(root); }).catch((err) => toast(err.message, { variant: 'error' }));
+    else if (action === 'copy-config') await copyConfig(trigger);
+    else if (action === 'redownload') await redownload(root, trigger);
   });
 }
 
@@ -55,19 +55,23 @@ function renderContent(root) {
   const slot = root.querySelector('[data-slot="content"]');
   slot.innerHTML = '';
 
-  const sub = getState().currentSubscription;
+  // Render every approved order — users can own multiple subscriptions.
+  const subs = (getState().orders ?? []).filter((o) => o.status === 'approved');
 
-  if (!sub) {
+  if (!subs.length) {
     const empty = mountTemplate(slot, 'tpl-my-sub-empty');
     fillStaticIcons(empty);
-    bindActions(empty);
     return;
   }
 
-  const node = mountTemplate(slot, 'tpl-my-sub-active');
-  fillDetails(node, sub);
-  fillStaticIcons(node);
-  bindActions(node);
+  for (const sub of subs) {
+    const card = document.createElement('div');
+    card.setAttribute('data-sub-id', String(sub.id));
+    card.appendChild(useTemplate('tpl-my-sub-active'));
+    fillDetails(card, sub);
+    fillStaticIcons(card);
+    slot.appendChild(card);
+  }
 }
 
 function fillDetails(node, sub) {
@@ -96,14 +100,34 @@ function fillDetails(node, sub) {
   }
 }
 
-async function copyConfig(root) {
-  const link = root.querySelector('[data-bind="configLink"]')?.textContent?.trim();
+async function copyConfig(trigger) {
+  const card = trigger.closest('[data-sub-id]');
+  const link = card?.querySelector('[data-bind="configLink"]')?.textContent?.trim();
   if (!link || link === '—') {
     toast('لینک اشتراک در دسترس نیست', { variant: 'warning' });
     return;
   }
   const ok = await copyToClipboard(link);
   toast(ok ? 'لینک اشتراک کپی شد' : 'کپی نشد', { variant: ok ? 'success' : 'error' });
+}
+
+async function redownload(root, trigger) {
+  const card = trigger.closest('[data-sub-id]');
+  const subId = card?.getAttribute('data-sub-id');
+  try {
+    await refreshShop();
+    renderContent(root);
+    const target = subId ? root.querySelector(`[data-sub-id="${subId}"]`) : null;
+    const link = target?.querySelector('[data-bind="configLink"]')?.textContent?.trim();
+    if (!link || link === '—') {
+      toast('لینک اشتراک در دسترس نیست', { variant: 'warning' });
+      return;
+    }
+    const ok = await copyToClipboard(link);
+    toast(ok ? 'لینک اشتراک کپی شد' : 'کپی نشد', { variant: ok ? 'success' : 'error' });
+  } catch (err) {
+    toast(err.message, { variant: 'error' });
+  }
 }
 
 function setText(root, key, value) {
