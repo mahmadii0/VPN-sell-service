@@ -33,7 +33,7 @@ func main() {
 		defer cancel()
 		server.Shutdown(shutdown)
 	}()
-	log.Printf("shop listening on %s", c.Listen)
+	log.Printf("shop listening on %s (db: %s)", c.Listen, c.DBDriver)
 	if e = server.ListenAndServe(); e != nil && e != http.ErrServerClosed {
 		log.Fatal(e)
 	}

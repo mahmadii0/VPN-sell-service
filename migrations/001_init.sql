@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS wallet_ledger (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL REFERENCES users(telegram_id),
   order_id INTEGER NOT NULL UNIQUE REFERENCES orders(id),
-  amount_toman INTEGER NOT NULL CHECK(amount_toman = 10000),
+  amount_toman INTEGER NOT NULL,
+  kind TEXT NOT NULL DEFAULT 'purchase',
   created_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS match_candidates (
