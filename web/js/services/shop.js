@@ -31,7 +31,7 @@ async function loadSection(section) {
   switch (section) {
     case 'shop': {
       const data = await get(ENDPOINTS.SHOP.path);
-      setState({ shopPackages: data.packages ?? [], cardNumber: data.card_number ?? '' });
+      setState({ shopPackages: data.packages ?? [], cardNumber: shop.card_number ?? '', cardNumber2: shop.card_number_2 ?? '',});
       break;
     }
     case 'me': {
