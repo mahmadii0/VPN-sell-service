@@ -19,8 +19,9 @@ services:
     restart: unless-stopped
   backend:
     build: .
+    entrypoint: [ "/bin/sh", "-c", "mkdir -p /app/receipts && exec /app/shop" ]
     depends_on:
-      mysql: 
+      mysql:
         condition: service_healthy
     environment:
       BOT_TOKEN: ${BOT_TOKEN:?set BOT_TOKEN}

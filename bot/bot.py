@@ -20,13 +20,13 @@ ADMINS = {int(value) for value in os.environ["ADMIN_IDS"].split(",") if value.st
 if not ADMINS:
     raise RuntimeError("ADMIN_IDS must contain an administrator")
 
-proxy = os.getenv("TELEGRAM_PROXY")
-
-if proxy:
-    apihelper.proxy = {
-        "http": proxy,
-        "https": proxy,
-    }
+# proxy = os.getenv("TELEGRAM_PROXY")
+#
+# if proxy:
+#     apihelper.proxy = {
+#         "http": proxy,
+#         "https": proxy,
+#     }
 bot = telebot.TeleBot(TOKEN)
 
 
@@ -53,6 +53,26 @@ def order_id(parts):
     if len(parts) < 2 or not parts[1].isdigit() or int(parts[1]) < 1:
         raise BackendError("positive order ID required")
     return int(parts[1])
+
+
+def send_receipt(chat_id, order, admin):
+    raw = api("GET", f"/internal/orders/{order['id']}/receipt", admin, binary=True)
+    image = io.BytesIO(raw)
+    image.name = "receipt.jpg"
+    caption = (
+        f"Order #{order['id']} | User: {order['user_id']}\n"
+        f"Price: {order['price_toman']} toman\n"
+        f"Receipt unverified.\n"
+        f"/approve {order['id']} /reject {order['id']} /match {order['id']}"
+    )
+    try:
+        bot.send_photo(chat_id, image, caption=caption)
+    except apihelper.ApiTelegramException as exc:
+        if exc.error_code != 400:
+            raise
+        document = io.BytesIO(raw)
+        document.name = "receipt.jpg"
+        bot.send_document(chat_id, document, caption=caption)
 
 
 def send_link(order, admin):
@@ -108,9 +128,7 @@ def admin_command(message):
         path = f"/internal/orders/{number}"
         if command == "/receipt":
             order = api("GET", path, admin)
-            image = io.BytesIO(api("GET", path + "/receipt", admin, binary=True))
-            image.name = "receipt.jpg"
-            bot.send_photo(message.chat.id, image, caption=f"Order #{number}, {order['price_toman']} toman, user {order['user_id']}. Receipt unverified.")
+            send_receipt(message.chat.id, order, admin)
         elif command in ("/approve", "/reject"):
             action = command[1:]
             result = api("POST", path + f"/{action}", admin)
@@ -133,7 +151,7 @@ def admin_command(message):
         elif command == "/deliver":
             send_link({"id": number}, admin)
             bot.send_message(message.chat.id, "Link sent.")
-    except (BackendError, ValueError, requests.RequestException) as exc:
+    except (BackendError, ValueError, requests.RequestException, apihelper.ApiTelegramException) as exc:
         bot.send_message(message.chat.id, f"Action failed: {exc}")
 
 
@@ -162,35 +180,40 @@ def callback(call):
 
 
 def deliver_events():
+    delivered = {}
     while True:
         try:
-            events = api("GET", "/internal/events")["events"]
+            events = api("GET", "/internal/events")["events"] or []
             for event in events:
-                order = event["order"]
-                kind = event["kind"]
-                if kind == "created":
-                    if order["status"] == "pending":
-                        sent = 0
-                        for admin in ADMINS:
+                try:
+                    order = event["order"]
+                    kind = event["kind"]
+                    done = delivered.setdefault(event["id"], set())
+                    if kind == "created" and order["status"] == "pending":
+                        for admin in ADMINS - done:
                             try:
-                                image = io.BytesIO(api("GET", f"/internal/orders/{order['id']}/receipt", admin, binary=True))
-                                image.name = "receipt.jpg"
-                                bot.send_photo(admin, image, caption=f"Pending order #{order['id']}\nUser: {order['user_id']}\nPackage: {order['package_name']}\nExact price: {order['price_toman']} toman\nReceipt unverified. /approve {order['id']} /reject {order['id']} /match {order['id']}")
-                                sent += 1
+                                send_receipt(admin, order, admin)
+                                done.add(admin)
                             except Exception:
-                                LOG.exception("Receipt notification to admin %s failed", admin)
-                        if not sent:
+                                LOG.exception("Receipt delivery failed: order=%s admin=%s", order["id"], admin)
+                        if not ADMINS.issubset(done):
                             continue
-                elif kind in ("approved", "rejected"):
-                    try:
-                        text = (f"Order #{order['id']} approved. An admin will assign your service." if kind == "approved"
-                                else f"Order #{order['id']} rejected. Contact support if needed.")
-                        bot.send_message(order["user_id"], text)
-                    except Exception:
-                        LOG.exception("Customer notification failed for order %s", order["id"])
-                api("POST", f"/internal/events/{event['id']}/ack")
+                    elif kind in ("approved", "rejected"):
+                        user = order["user_id"]
+                        if user not in done:
+                            text = (
+                                f"Order #{order['id']} approved. An admin will assign your service."
+                                if kind == "approved" else
+                                f"Order #{order['id']} rejected. Contact support if needed."
+                            )
+                            bot.send_message(user, text)
+                            done.add(user)
+                    api("POST", f"/internal/events/{event['id']}/ack")
+                    delivered.pop(event["id"], None)
+                except Exception:
+                    LOG.exception("Event delivery failed: event=%s", event["id"])
         except Exception:
-            LOG.exception("Event delivery failed")
+            LOG.exception("Fetching events failed")
         time.sleep(5)
 
 

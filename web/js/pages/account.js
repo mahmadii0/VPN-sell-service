@@ -57,8 +57,8 @@ function fillProfile(root) {
 
   setText(root, 'balance', formatPrice(walletBalance ?? 0));
   setText(root, 'subscriptionLabel', currentSubscription
-    ? `${CONNECTION_LABEL[currentSubscription.type] || ''} — ${formatNumber(currentSubscription.duration)} ماهه`
-    : 'ندارد');
+      ? `${CONNECTION_LABEL[currentSubscription.type] || ''} — ${formatNumber(currentSubscription.duration)} ماهه`
+      : 'ندارد');
   setText(root, 'ordersCount', formatNumber((orders ?? []).length));
 }
 

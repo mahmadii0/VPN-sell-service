@@ -65,7 +65,9 @@ function mountOrders(root) {
     screenId: 'my-purchases',
     container: slot,
     skeleton: listSkeleton(3),
-    load: async () => (await refreshShop()).orders ?? [],
+    load: async () => (
+        await refreshShop({ sections: ['orders'] })
+    ).orders ?? [],
     render: (orders) => buildOrdersView(orders)
   });
 }
@@ -92,12 +94,12 @@ function buildOrdersView(orders) {
 
     setText(node, 'orderId', `#${order.id}`);
     setText(node, 'volume', order.unlimited
-      ? 'نامحدود'
-      : order.volume == null ? order.packageName : `${formatNumber(order.volume)} گیگابایت`);
+        ? 'نامحدود'
+        : order.volume == null ? order.packageName : `${formatNumber(order.volume)} گیگابایت`);
 
     const meta = order.duration
-      ? `${formatNumber(order.duration)} ماهه / ${CONNECTION_LABEL[order.type] || ''}`
-      : order.packageName;
+        ? `${formatNumber(order.duration)} ماهه / ${CONNECTION_LABEL[order.type] || ''}`
+        : order.packageName;
     setText(node, 'meta', meta);
     setText(node, 'date', formatDate(order.createdAt) || '—');
     setText(node, 'price', formatPrice(order.price));
