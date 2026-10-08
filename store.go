@@ -180,10 +180,8 @@ func applyMySQLSchema(db *sql.DB) error {
 			user_id BIGINT NOT NULL,
 			order_id BIGINT NOT NULL,
 			amount_toman BIGINT NOT NULL,
-			kind VARCHAR(16) NOT NULL DEFAULT 'purchase',
 			created_at VARCHAR(40) NOT NULL,
 			UNIQUE KEY wallet_ledger_order (order_id),
-			KEY wallet_ledger_user (user_id, id),
 			CONSTRAINT wallet_ledger_user_fk FOREIGN KEY (user_id) REFERENCES users(telegram_id),
 			CONSTRAINT wallet_ledger_order_fk FOREIGN KEY (order_id) REFERENCES orders(id)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
@@ -210,14 +208,6 @@ func applyMySQLSchema(db *sql.DB) error {
 	}
 	for _, stmt := range statements {
 		if _, err := db.Exec(stmt); err != nil {
-			return err
-		}
-	}
-
-	// Existing installations may predate the `kind` column; add it if missing.
-	// New installations already get it from the CREATE TABLE above.
-	if _, err := db.Exec("ALTER TABLE wallet_ledger ADD COLUMN kind VARCHAR(16) NOT NULL DEFAULT 'purchase'"); err != nil {
-		if !strings.Contains(err.Error(), "Duplicate column name") && !strings.Contains(err.Error(), "already exists") {
 			return err
 		}
 	}
@@ -283,10 +273,10 @@ func (s *Store) ensureUser(ctx context.Context, tx *sql.Tx, user int64) error {
 	}
 }
 
-func (s *Store) ensureLedgerEntry(ctx context.Context, tx *sql.Tx, user, orderID int64, kind string, amountToman int64) (bool, error) {
+func (s *Store) ensureLedgerEntry(ctx context.Context, tx *sql.Tx, user, orderID int64) (bool, error) {
 	switch s.Driver {
 	case "mysql":
-		r, e := tx.ExecContext(ctx, "INSERT IGNORE INTO wallet_ledger(user_id,order_id,amount_toman,kind,created_at) VALUES(?,?,?,?,?)", user, orderID, amountToman, kind, utc())
+		r, e := tx.ExecContext(ctx, "INSERT IGNORE INTO wallet_ledger(user_id,order_id,amount_toman,created_at) VALUES(?,?,10000,?)", user, orderID, utc())
 		if e != nil {
 			return false, e
 		}
@@ -296,12 +286,7 @@ func (s *Store) ensureLedgerEntry(ctx context.Context, tx *sql.Tx, user, orderID
 		}
 		return n == 1, nil
 	case "sqlite", "modernc.org/sqlite":
-		// Explicit existence check: INSERT OR IGNORE also swallows CHECK failures.
-		var exists int
-		if e := tx.QueryRowContext(ctx, "SELECT 1 FROM wallet_ledger WHERE order_id=?", orderID).Scan(&exists); e == nil {
-			return false, nil
-		}
-		r, e := tx.ExecContext(ctx, "INSERT INTO wallet_ledger(user_id,order_id,amount_toman,kind,created_at) VALUES(?,?,?,?,?)", user, orderID, amountToman, kind, utc())
+		r, e := tx.ExecContext(ctx, "INSERT OR IGNORE INTO wallet_ledger(user_id,order_id,amount_toman,created_at) VALUES(?,?,10000,?)", user, orderID, utc())
 		if e != nil {
 			return false, e
 		}
@@ -393,8 +378,7 @@ func (s *Store) Approve(ctx context.Context, id, admin int64) (bool, error) {
 	defer tx.Rollback()
 	var status string
 	var user int64
-	var priceToman int64
-	e = tx.QueryRowContext(ctx, "SELECT status,user_id,price_toman FROM orders WHERE id=?", id).Scan(&status, &user, &priceToman)
+	e = tx.QueryRowContext(ctx, "SELECT status,user_id FROM orders WHERE id=?", id).Scan(&status, &user)
 	if e != nil {
 		return false, e
 	}
@@ -407,7 +391,7 @@ func (s *Store) Approve(ctx context.Context, id, admin int64) (bool, error) {
 	if _, e = tx.ExecContext(ctx, "UPDATE orders SET status='approved',reviewed_at=?,reviewed_by=? WHERE id=?", utc(), admin, id); e != nil {
 		return false, e
 	}
-	created, e := s.ensureLedgerEntry(ctx, tx, user, id, "purchase", priceToman)
+	created, e := s.ensureLedgerEntry(ctx, tx, user, id)
 	if e != nil {
 		return false, e
 	}
@@ -479,7 +463,7 @@ func (s *Store) AckEvent(ctx context.Context, id int64) error {
 	return e
 }
 func (s *Store) Ledger(ctx context.Context, user int64) ([]map[string]any, error) {
-	rows, e := s.DB.QueryContext(ctx, "SELECT order_id,amount_toman,kind,created_at FROM wallet_ledger WHERE user_id=? ORDER BY id DESC", user)
+	rows, e := s.DB.QueryContext(ctx, "SELECT order_id,amount_toman,created_at FROM wallet_ledger WHERE user_id=? ORDER BY id DESC", user)
 	if e != nil {
 		return nil, e
 	}
@@ -487,11 +471,11 @@ func (s *Store) Ledger(ctx context.Context, user int64) ([]map[string]any, error
 	out := []map[string]any{}
 	for rows.Next() {
 		var orderID, amount int64
-		var kind, date string
-		if e = rows.Scan(&orderID, &amount, &kind, &date); e != nil {
+		var date string
+		if e = rows.Scan(&orderID, &amount, &date); e != nil {
 			return nil, e
 		}
-		out = append(out, map[string]any{"order_id": orderID, "amount_toman": amount, "kind": kind, "created_at": date})
+		out = append(out, map[string]any{"order_id": orderID, "amount_toman": amount, "created_at": date})
 	}
 	return out, rows.Err()
 }

@@ -112,9 +112,11 @@ def start(message):
     subs = InlineKeyboardButton("🔹دریافت کانفیگ ها با لینک ساب🔹", callback_data="configsBySub")
     v2rayng=InlineKeyboardButton("📥دانلود آخرین نسخه V2rayNG📥",callback_data='download_v2rayng_arm64')
     v2rayngfdroid=InlineKeyboardButton("📥دانلود آخرین نسخه V2rayNG(fdroid)📥",callback_data='download_v2rayng_fdroid_arm64')
+    v2rayn=InlineKeyboardButton("📥دانلود آخرین نسخه V2rayN برای ویندوز📥",callback_data='download_v2rayn_windows')
     markup.add(subs)
     markup.add(v2rayng)
     markup.add(v2rayngfdroid)
+    markup.add(v2rayn)
     markup.add(types.InlineKeyboardButton("💠بازکردن فروشگاه💠", web_app=types.WebAppInfo(MINI_URL)))
     bot.send_message(message.chat.id,f"""عزیز به ربات پالس خوش آمدید {name}
 
