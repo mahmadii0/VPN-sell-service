@@ -65,7 +65,9 @@ function mountTransactions(root) {
     screenId: 'wallet-transactions',
     container: slot,
     skeleton: listSkeleton(3),
-    load: async () => (await refreshShop()).walletTransactions ?? [],
+    load: async () => (
+        await refreshShop({ sections: ['me', 'transactions'] })
+    ).walletTransactions ?? [],
     render: (txs) => buildTransactionsView(txs)
   });
 }

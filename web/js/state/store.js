@@ -7,6 +7,7 @@ const initialState = {
   currentUser: null,
   shopPackages: [],
   cardNumber: '',
+  cardNumber2: '',
   walletBalance: 0,
   walletTransactions: [],
   notifications: [],

@@ -19,8 +19,9 @@ services:
     restart: unless-stopped
   backend:
     build: .
+    entrypoint: [ "/bin/sh", "-c", "mkdir -p /app/receipts && exec /app/shop" ]
     depends_on:
-      mysql: 
+      mysql:
         condition: service_healthy
     environment:
       BOT_TOKEN: ${BOT_TOKEN:?set BOT_TOKEN}
@@ -29,6 +30,7 @@ services:
       ADMIN_IDS: ${ADMIN_IDS:?set ADMIN_IDS}
       MINI_APP_URL: ${MINI_APP_URL:?set MINI_APP_URL}
       CARD_NUMBER: ${CARD_NUMBER:?set CARD_NUMBER}
+      CARD_NUMBER_2: ${CARD_NUMBER_2:-}
       PANEL_URL: ${PANEL_URL:?set PANEL_URL}
       PANEL_API_TOKEN: ${PANEL_API_TOKEN:?set PANEL_API_TOKEN}
       PANEL_SUBSCRIPTION_BASE_URL: ${PANEL_SUBSCRIPTION_BASE_URL:?set PANEL_SUBSCRIPTION_BASE_URL}

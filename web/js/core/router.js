@@ -29,7 +29,21 @@ export function init(mount) {
     setState({ currentScreen: initialId });
   }
 
-  subscribe((s) => render(s.currentScreen, s.screenParams));
+  let lastScreen;
+  let lastParams;
+  subscribe((s) => {
+    if (
+        s.currentScreen === lastScreen &&
+        s.screenParams === lastParams
+    ) {
+      return;
+    }
+
+    lastScreen = s.currentScreen;
+    lastParams = s.screenParams;
+
+    render(s.currentScreen, s.screenParams);
+  });
   syncBackButton();
 }
 
@@ -114,29 +128,31 @@ function buildErrorNode() {
   const wrap = el('div', { class: 'pulse-page' });
 
   wrap.appendChild(
-    el('div', { class: 'pulse-page-section' }, [
-      el('div', { class: 'pulse-card' }, [
-        el('div', { class: 'pulse-empty' }, [
-          el('div', { class: 'pulse-empty__icon' }, [
-            el('span', {
-              html: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+      el('div', { class: 'pulse-page-section' }, [
+        el('div', { class: 'pulse-card' }, [
+          el('div', { class: 'pulse-empty' }, [
+            el('div', { class: 'pulse-empty__icon' }, [
+              el('span', {
+                html: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+              })
+            ]),
+            el('div', { class: 'pulse-empty__title' }, 'خطا در بارگذاری صفحه'),
+            el('div', { class: 'pulse-empty__text' }, 'مشکلی پیش آمده. لطفاً دوباره تلاش کنید.'),
+            el('button', {
+              type: 'button',
+              class: 'pulse-btn pulse-btn--primary',
+              text: 'بارگذاری مجدد',
+              onClick: () => window.location.reload()
             })
-          ]),
-          el('div', { class: 'pulse-empty__title' }, 'خطا در بارگذاری صفحه'),
-          el('div', { class: 'pulse-empty__text' }, 'مشکلی پیش آمده. لطفاً دوباره تلاش کنید.'),
-          el('button', {
-            type: 'button',
-            class: 'pulse-btn pulse-btn--primary',
-            text: 'بارگذاری مجدد',
-            onClick: () => window.location.reload()
-          })
+          ])
         ])
       ])
-    ])
   );
 
   return wrap;
 }
+
+let renderVersion = 0;
 
 async function render(screenId, params) {
   if (!mountNode) return;
@@ -144,37 +160,50 @@ async function render(screenId, params) {
   const renderFn = registry.get(screenId);
   if (!renderFn) return;
 
-  if (typeof currentCleanup === 'function') {
-    try { currentCleanup(); } catch (e) { console.error('[router] cleanup:', e); }
-    currentCleanup = null;
+  const version = ++renderVersion;
+
+  const cleanup = currentCleanup;
+  currentCleanup = null;
+
+  try {
+    cleanup?.();
+  } catch (err) {
+    console.error('[router] cleanup:', err);
   }
 
-  const oldChildren = Array.from(mountNode.children);
-  if (oldChildren.length && !prefersReducedMotion()) {
+  if (mountNode.children.length && !prefersReducedMotion()) {
     mountNode.classList.add('is-leaving');
-    await new Promise((r) => setTimeout(r, EXIT_MS));
-    mountNode.classList.remove('is-leaving');
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, EXIT_MS);
+    });
   }
 
-  mountNode.innerHTML = '';
+  if (version !== renderVersion) return;
+
+  mountNode.classList.remove('is-leaving');
+  mountNode.replaceChildren();
 
   try {
     const result = await renderFn({ params });
-    const node = result?.node ?? result;
+
+    if (version !== renderVersion) {
+      result?.cleanup?.();
+      return;
+    }
+
     currentCleanup = result?.cleanup ?? null;
 
-    if (node instanceof Node) {
-      if (node.nodeType === 1) node.classList.add('is-entering');
-      mountNode.appendChild(node);
+    const node = result?.node ?? result;
 
-      if (node.nodeType === 1 && !prefersReducedMotion()) {
-        setTimeout(() => node.classList.remove('is-entering'), 400);
-      } else if (node.nodeType === 1) {
-        node.classList.remove('is-entering');
-      }
+    if (node instanceof Node) {
+      mountNode.appendChild(node);
     }
   } catch (err) {
+    if (version !== renderVersion) return;
+
     console.error('[router] render error:', err);
-    mountNode.appendChild(buildErrorNode());
+    mountNode.replaceChildren(buildErrorNode());
   }
 }
+

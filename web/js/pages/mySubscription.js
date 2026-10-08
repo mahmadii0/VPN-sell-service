@@ -20,10 +20,27 @@ export function renderMySubscription() {
 
   fillStaticIcons(root);
   bindActions(root);
-  renderContent(root);
-  refreshShop().then(() => renderContent(root)).catch((err) => toast(err.message, { variant: 'error' }));
+  void loadSubscription(root);
 
   return frag;
+}
+
+async function loadSubscription(root) {
+  const slot = root.querySelector('[data-slot="content"]');
+  slot.textContent = 'در حال دریافت اشتراک…';
+  try {
+    await refreshShop({ sections: ['subscription'] });
+    renderContent(root);
+  } catch (err) {
+    const message = document.createElement('p');
+    message.textContent = err?.message || 'دریافت اشتراک ناموفق بود';
+    const retry = document.createElement('button');
+    retry.type = 'button';
+    retry.className = 'pulse-btn pulse-btn--primary';
+    retry.textContent = 'تلاش مجدد';
+    retry.addEventListener('click', () => loadSubscription(root));
+    slot.replaceChildren(message, retry);
+  }
 }
 
 function fillStaticIcons(root) {
@@ -46,8 +63,23 @@ function bindActions(root) {
 
     if (action === 'back') back();
     else if (action === 'buy') navigate(SCREENS.DURATION);
-    else if (action === 'copy-config') await copyConfig(trigger);
-    else if (action === 'redownload') await redownload(root, trigger);
+    else if (action === 'copy-config') await copyConfig(trigger.closest('[data-subscription-id]'));
+    else if (action === 'redownload') {
+      const id = trigger.closest('[data-subscription-id]')?.dataset.subscriptionId;
+      trigger.disabled = true;
+      try {
+        await refreshShop({ sections: ['subscription'] });
+        renderContent(root);
+        const card = Array.from(root.querySelectorAll('[data-subscription-id]'))
+          .find((node) => node.dataset.subscriptionId === id);
+        card?.scrollIntoView?.({ block: 'nearest' });
+        toast('اطلاعات به‌روز شد؛ برای کپی لینک، دکمهٔ کپی را بزنید', { variant: 'success' });
+      } catch (err) {
+        toast(err?.message || 'دریافت اشتراک ناموفق بود', { variant: 'error' });
+      } finally {
+        trigger.disabled = false;
+      }
+    }
   });
 }
 
@@ -55,18 +87,19 @@ function renderContent(root) {
   const slot = root.querySelector('[data-slot="content"]');
   slot.innerHTML = '';
 
-  // Render every approved order — users can own multiple subscriptions.
-  const subs = (getState().orders ?? []).filter((o) => o.status === 'approved');
+  const { subscriptions = [] } = getState();
 
-  if (!subs.length) {
+  if (!subscriptions.length) {
     const empty = mountTemplate(slot, 'tpl-my-sub-empty');
     fillStaticIcons(empty);
     return;
   }
 
-  for (const sub of subs) {
-    const card = document.createElement('div');
-    card.setAttribute('data-sub-id', String(sub.id));
+  for (const sub of subscriptions) {
+    // The template has two top-level sections: details AND the link.
+    // Keep both inside one card so each copy action uses its own link.
+    const card = document.createElement('section');
+    card.dataset.subscriptionId = String(sub.id);
     card.appendChild(useTemplate('tpl-my-sub-active'));
     fillDetails(card, sub);
     fillStaticIcons(card);
@@ -75,6 +108,10 @@ function renderContent(root) {
 }
 
 function fillDetails(node, sub) {
+  const title = node.querySelector('.pulse-home-sub__title');
+  if (title) title.textContent = `${sub.packageName || 'سرویس تخصیص‌یافته'} — سفارش #${sub.id}`;
+  const chip = node.querySelector('.pulse-chip');
+  if (chip) chip.textContent = sub.remainingSeconds === 0 ? 'منقضی‌شده' : 'تخصیص‌یافته';
   setText(node, 'connectionType', CONNECTION_LABEL[sub.type] || '—');
   setText(node, 'duration', sub.duration ? `${formatNumber(sub.duration)} ماهه` : sub.packageName);
   setText(node, 'expiresAt', formatDate(sub.expiresAt) || '—');
@@ -82,6 +119,13 @@ function fillDetails(node, sub) {
   const daysLeft = Number(sub.daysLeft) || 0;
   setText(node, 'daysLeft', sub.daysLeft == null ? '—' : `${formatNumber(daysLeft)} روز`);
   setText(node, 'configLink', sub.configLink || '—');
+  const linkNode = node.querySelector('[data-bind="configLink"]');
+  if (linkNode) {
+    linkNode.dir = 'ltr';
+    linkNode.style.userSelect = 'text';
+    linkNode.style.webkitUserSelect = 'text';
+    linkNode.style.overflowWrap = 'anywhere';
+  }
 
   if (sub.unlimited || sub.totalGB == null) {
     hideRow(node, 'volumeRow');
@@ -100,34 +144,14 @@ function fillDetails(node, sub) {
   }
 }
 
-async function copyConfig(trigger) {
-  const card = trigger.closest('[data-sub-id]');
-  const link = card?.querySelector('[data-bind="configLink"]')?.textContent?.trim();
+async function copyConfig(root) {
+  const link = root?.querySelector('[data-bind="configLink"]')?.textContent?.trim();
   if (!link || link === '—') {
     toast('لینک اشتراک در دسترس نیست', { variant: 'warning' });
     return;
   }
   const ok = await copyToClipboard(link);
   toast(ok ? 'لینک اشتراک کپی شد' : 'کپی نشد', { variant: ok ? 'success' : 'error' });
-}
-
-async function redownload(root, trigger) {
-  const card = trigger.closest('[data-sub-id]');
-  const subId = card?.getAttribute('data-sub-id');
-  try {
-    await refreshShop();
-    renderContent(root);
-    const target = subId ? root.querySelector(`[data-sub-id="${subId}"]`) : null;
-    const link = target?.querySelector('[data-bind="configLink"]')?.textContent?.trim();
-    if (!link || link === '—') {
-      toast('لینک اشتراک در دسترس نیست', { variant: 'warning' });
-      return;
-    }
-    const ok = await copyToClipboard(link);
-    toast(ok ? 'لینک اشتراک کپی شد' : 'کپی نشد', { variant: ok ? 'success' : 'error' });
-  } catch (err) {
-    toast(err.message, { variant: 'error' });
-  }
 }
 
 function setText(root, key, value) {
