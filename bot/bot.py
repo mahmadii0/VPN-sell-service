@@ -6,6 +6,7 @@ import threading
 import time
 import call1
 import requests
+import call1
 import telebot
 from telebot import types
 from telebot.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, ChatPermissions
@@ -198,6 +199,11 @@ def callback(call):
     if not call.message or call.message.chat.type != "private" or call.from_user.id not in ADMINS:
         bot.answer_callback_query(call.id, "Admin only")
         return
+    elif call.message.chat.type == "private":
+        if call.data.startswith("c") or call.data.startswith("d"):
+            call1.callback1(bot, call)
+            return
+
     admin = call.from_user.id
     try:
         parts = call.data.split(":")
