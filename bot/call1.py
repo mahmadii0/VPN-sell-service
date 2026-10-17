@@ -596,7 +596,7 @@ def callback1(bot, call):
         ask_for_subscription_link(bot, call)
         return
 
-    elif call.data == "download_v2rayn_windows":
+    if call.data == "download_v2rayn_windows":
         bot.answer_callback_query(call.id)
 
         send_latest_product(
@@ -607,7 +607,7 @@ def callback1(bot, call):
 
         return
 
-    elif call.data == "download_v2rayng_arm64":
+    if call.data == "download_v2rayng_arm64":
         bot.answer_callback_query(call.id)
 
         send_latest_product(
@@ -618,7 +618,7 @@ def callback1(bot, call):
 
         return
 
-    elif call.data == "download_v2rayng_fdroid_arm64":
+    if call.data == "download_v2rayng_fdroid_arm64":
         bot.answer_callback_query(call.id)
 
         send_latest_product(

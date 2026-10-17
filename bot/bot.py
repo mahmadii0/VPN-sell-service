@@ -4,6 +4,7 @@ import logging
 import os
 import threading
 import time
+import call1
 import requests
 import call1
 import telebot
@@ -106,31 +107,41 @@ def assign(order_id_value, admin, payload):
 def start(message):
     if message.chat.type != "private":
         return
+    markup = types.InlineKeyboardMarkup()
     name = message.from_user.first_name
     markup = InlineKeyboardMarkup()
     subs = InlineKeyboardButton("🔹دریافت کانفیگ ها با لینک ساب🔹", callback_data="configsBySub")
     v2rayng=InlineKeyboardButton("📥دانلود آخرین نسخه V2rayNG📥",callback_data='download_v2rayng_arm64')
     v2rayngfdroid=InlineKeyboardButton("📥دانلود آخرین نسخه V2rayNG(fdroid)📥",callback_data='download_v2rayng_fdroid_arm64')
+    v2rayn=InlineKeyboardButton("📥دانلود آخرین نسخه V2rayN برای ویندوز📥",callback_data='download_v2rayn_windows')
     markup.add(subs)
     markup.add(v2rayng)
     markup.add(v2rayngfdroid)
+    markup.add(v2rayn)
     markup.add(types.InlineKeyboardButton("💠بازکردن فروشگاه💠", web_app=types.WebAppInfo(MINI_URL)))
     bot.send_message(message.chat.id,f"""عزیز به ربات پالس خوش آمدید {name}
 
                                       🔹چه کاری می خواهید انجام دهید؟""",reply_markup=markup)
 
 
+# OLD Handlers
+
 @bot.message_handler(
-    content_types=["text"],
-    func=lambda message: (
-        message.from_user.id in call1.reserveNotif
-        and
-        call1.reserveNotif[message.from_user.id].get("action")
-        == "waiting_for_subscription_link"
+        content_types=["text"],
+        func=lambda message: (
+            message.from_user.id in call1.reserveNotif
+            and
+            call1.reserveNotif[message.from_user.id].get("action")
+            == "waiting_for_subscription_link"
+        )
     )
-)
 def handle_subscription_link_message(message):
         call1.handle_subscription_link(bot, message)
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def handle_callback(call):
+    call1.callback1(bot,call)
 
 @bot.message_handler(commands=["pending", "receipt", "approve", "reject", "match", "assign", "deliver"])
 def admin_command(message):

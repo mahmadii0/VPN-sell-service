@@ -54,7 +54,12 @@ func userID(r *http.Request) int64 { return r.Context().Value(userKey{}).(int64)
 func (a *API) routes() http.Handler {
 	m := http.NewServeMux()
 	m.HandleFunc("GET /api/shop", a.auth(func(w http.ResponseWriter, r *http.Request) {
-		jsonOut(w, 200, map[string]any{"packages": a.Config.Packages, "card_number": a.Config.CardNumber, "subscription_base": a.Config.SubscriptionBase})
+		jsonOut(w, 200, map[string]any{
+			"packages":          a.Config.Packages,
+			"card_number":       a.Config.CardNumber,
+			"card_number_2":     a.Config.CardNumber2,
+			"subscription_base": a.Config.SubscriptionBase,
+		})
 	}))
 	m.HandleFunc("GET /api/me", a.auth(func(w http.ResponseWriter, r *http.Request) {
 		balance, e := a.Store.Balance(r.Context(), userID(r))

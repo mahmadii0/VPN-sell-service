@@ -19,16 +19,16 @@ type Package struct {
 	PriceToman  int64  `json:"price_toman"`
 }
 type Config struct {
-	BotToken, BotInternalToken, MiniAppURL, CardNumber, PanelURL, PanelToken, SubscriptionBase, DBDriver, DBDSN, ReceiptDir, Listen string
-	Admins                                                                                                                          map[int64]bool
-	Packages                                                                                                                        []Package
+	BotToken, BotInternalToken, MiniAppURL, CardNumber, CardNumber2, PanelURL, PanelToken, SubscriptionBase, DBDriver, DBDSN, ReceiptDir, Listen string
+	Admins                                                                                                                                       map[int64]bool
+	Packages                                                                                                                                     []Package
 }
 
 func loadConfig() (Config, error) {
 	if e := loadDotEnv(".env"); e != nil {
 		return Config{}, e
 	}
-	c := Config{BotToken: os.Getenv("BOT_TOKEN"), BotInternalToken: os.Getenv("BOT_INTERNAL_TOKEN"), MiniAppURL: os.Getenv("MINI_APP_URL"), CardNumber: os.Getenv("CARD_NUMBER"), PanelURL: strings.TrimRight(os.Getenv("PANEL_URL"), "/"), PanelToken: os.Getenv("PANEL_API_TOKEN"), SubscriptionBase: os.Getenv("PANEL_SUBSCRIPTION_BASE_URL"), DBDriver: strings.TrimSpace(os.Getenv("DB_DRIVER")), DBDSN: os.Getenv("DB_DSN"), ReceiptDir: os.Getenv("RECEIPT_DIR"), Listen: os.Getenv("LISTEN_ADDR"), Admins: map[int64]bool{}}
+	c := Config{BotToken: os.Getenv("BOT_TOKEN"), BotInternalToken: os.Getenv("BOT_INTERNAL_TOKEN"), MiniAppURL: os.Getenv("MINI_APP_URL"), CardNumber: os.Getenv("CARD_NUMBER"), CardNumber2: os.Getenv("CARD_NUMBER_2"), PanelURL: strings.TrimRight(os.Getenv("PANEL_URL"), "/"), PanelToken: os.Getenv("PANEL_API_TOKEN"), SubscriptionBase: os.Getenv("PANEL_SUBSCRIPTION_BASE_URL"), DBDriver: strings.TrimSpace(os.Getenv("DB_DRIVER")), DBDSN: os.Getenv("DB_DSN"), ReceiptDir: os.Getenv("RECEIPT_DIR"), Listen: os.Getenv("LISTEN_ADDR"), Admins: map[int64]bool{}}
 	if c.DBDriver == "" {
 		c.DBDriver = "mysql"
 	}

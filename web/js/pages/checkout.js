@@ -79,16 +79,32 @@ function renderCards(root) {
   const slot = root.querySelector('[data-slot="cards"]');
   if (!slot) return;
 
+  const { cardNumber, cardNumber2 } = getState();
+
+  const numbers = [cardNumber, cardNumber2].filter(
+      (number) => typeof number === 'string' && number.trim()
+  );
+
+  slot.textContent = '';
+
   const frag = document.createDocumentFragment();
 
-  const cardNumber = getState().cardNumber;
-  if (!cardNumber) return;
-  for (const card of [{ id: 1, holder: '', number: cardNumber, numberRaw: cardNumber.replace(/\D/g, '') }]) {
+  for (const [index, number] of numbers.entries()) {
+    const card = {
+      id: index + 1,
+      holder: '',
+      number: number.trim(),
+      numberRaw: number.replace(/\D/g, '')
+    };
+
     const tpl = useTemplate('tpl-card-account');
     const node = tpl.firstElementChild;
 
     node.dataset.cardId = String(card.id);
-    node.querySelector('[data-bind="holder"]').textContent = card.holder;
+
+    node.querySelector('[data-bind="holder"]').textContent =
+        card.holder;
+
     const numberEl = node.querySelector('[data-bind="number"]');
     numberEl.textContent = card.number;
     numberEl.dataset.raw = card.numberRaw;
@@ -104,6 +120,7 @@ function renderCards(root) {
 
   slot.appendChild(frag);
 }
+
 
 function bindActions(root, plan) {
   root.addEventListener('click', async (e) => {
